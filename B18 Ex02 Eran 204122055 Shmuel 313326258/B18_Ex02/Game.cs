@@ -9,7 +9,7 @@ namespace B18_Ex02
         public const int SMALL_BOARD_SIZE = 6;
 
         public enum pieces { White = 'O', WhiteKing = 'U', Black = 'X', BlackKing = 'K' };
-        public enum eatDirections { UpRight, UpLeft, DownRight, DownLeft,CantEat};
+        public enum eatDirections { UpRight, UpLeft, DownRight, DownLeft, CantEat };
 
         Board m_Checkers = new Board();
         bool m_GameOver = false;
@@ -25,6 +25,7 @@ namespace B18_Ex02
 
             while (!m_GameOver)
             {
+
                 UI.DisplayCurrentPlayerMessage(m_playerOne); //TODO: needs to be current player, add the symbol at the end of message (X or O)
                 string nextMove = Console.ReadLine();
                 Move(nextMove, currentPlayerTurn);
@@ -91,10 +92,10 @@ namespace B18_Ex02
             int currentCol, currentRow, nextCol, nextRow;
             convertStringInputToIntegers(i_MoveInput, out currentCol, out currentRow, out nextCol, out nextRow);
 
-            m_Checkers.GameBoard[nextCol, nextRow - 1].Value = m_Checkers.GameBoard[currentCol, currentRow - 1].Value;
-            m_Checkers.GameBoard[nextCol, nextRow - 1].HasPiece = true;
-            m_Checkers.GameBoard[currentCol, currentRow - 1].Value = ' ';
-            m_Checkers.GameBoard[currentCol, currentRow - 1].HasPiece = false;
+            m_Checkers.GameBoard[nextCol, nextRow].Value = m_Checkers.GameBoard[currentCol, currentRow].Value;
+            m_Checkers.GameBoard[nextCol, nextRow].HasPiece = true;
+            m_Checkers.GameBoard[currentCol, currentRow].Value = ' ';
+            m_Checkers.GameBoard[currentCol, currentRow].HasPiece = false;
         }
 
         private bool isStringInputLegal(string i_moveInput)
@@ -109,14 +110,18 @@ namespace B18_Ex02
                     && i_moveInput[4] >= 'a' && i_moveInput[4] <= (column + Board.ROW_SMALL_LETTER));
         }
 
+
         private bool isMoveInputLegal(string i_MoveInput, HumanPlayer i_CurrentPlayer)
         {
+            int boardSize = m_Checkers.GameBoard.GetLength(0);
+
             if (isStringInputLegal(i_MoveInput))
             {
                 int currentCol, currentRow, nextCol, nextRow;
+
                 convertStringInputToIntegers(i_MoveInput, out currentCol, out currentRow, out nextCol, out nextRow);
 
-                if (isThereEatMove(i_MoveInput, i_CurrentPlayer) == eatDirections.CantEat)
+                if (!isThereEatMove(i_CurrentPlayer)) //if we cant eat, just play leagal move.
                 {
                     if (m_Checkers.GameBoard[currentCol, currentRow].HasPiece && !m_Checkers.GameBoard[nextCol, nextRow].HasPiece)
                     {
@@ -130,74 +135,132 @@ namespace B18_Ex02
                         }
                     }
                 }
-                else
+
+                else //that's mean we MUST eat, need to check if we eating !
                 {
                     if (i_CurrentPlayer.IsWhite)
                     {
-                        if (isThereEatMove(i_MoveInput, i_CurrentPlayer) == eatDirections.DownLeft)
+                        if (boardSize > currentCol + 2 && boardSize > currentRow + 2)
                         {
-                            return (nextRow - currentRow == 2 && currentCol - nextCol == 2);
-                        }
-                        if (isThereEatMove(i_MoveInput, i_CurrentPlayer) == eatDirections.DownRight)
-                        {
-                            return (nextRow - currentRow == 2 && nextCol - currentCol == 2);
-                        }
+                            if ((m_Checkers.GameBoard[currentCol + 1, currentRow + 1].Value == (char)Game.pieces.Black
+                                           && m_Checkers.GameBoard[currentCol + 2, currentRow + 2].Value == ' '))
+                            {
+                                if (nextCol == currentCol + 2 && nextRow == currentRow + 2)
+                                {
+                                    m_Checkers.GameBoard[currentCol + 1, currentRow + 1].Value = ' ';
+                                    return true;
+                                }
+                            }
+                            else if (currentCol >= 2 && boardSize > currentRow + 2)
+                            {
+                                if ((m_Checkers.GameBoard[currentCol - 1, currentRow + 1].Value == (char)Game.pieces.Black
+                                               && m_Checkers.GameBoard[currentCol - 2, currentRow + 2].Value == ' '))
+                                {
+                                    if (nextCol == currentCol - 2 && nextRow == currentRow + 2)
+                                    {
+                                        m_Checkers.GameBoard[currentCol - 1, currentRow + 1].Value = ' ';
+                                        return true;
+                                    }
+                                }
 
-                    }
-                    else
-                    {
-                        if (isThereEatMove(i_MoveInput, i_CurrentPlayer) == eatDirections.UpLeft)
-                        {
-                            return (currentRow - nextRow == 2 && currentCol - nextCol == 2);
+
+                            }
+
                         }
-                        if (isThereEatMove(i_MoveInput, i_CurrentPlayer) == eatDirections.UpRight)
+             
+                    }
+
+                    else //that's mean Black player.
+                    {
+                        if (boardSize > currentCol + 2 &&  currentRow >= 2)
                         {
-                            return (currentRow - nextRow == 2 && nextCol - currentCol == 2);
+                            if ((m_Checkers.GameBoard[currentCol + 1, currentRow - 1].Value == (char)Game.pieces.White
+                                           && m_Checkers.GameBoard[currentCol + 2, currentRow - 2].Value == ' '))
+                            {
+                                if (nextCol == currentCol + 2 && nextRow == currentRow - 2)
+                                {
+                                    m_Checkers.GameBoard[currentCol + 1, currentRow - 1].Value = ' ';
+                                    return true;
+                                }
+                            }
+                            else if (currentCol >= 2 &&  currentRow >= 2)
+                            {
+                                if ((m_Checkers.GameBoard[currentCol - 1, currentRow - 1].Value == (char)Game.pieces.White
+                                               && m_Checkers.GameBoard[currentCol - 2, currentRow - 2].Value == ' '))
+                                {
+                                    if (nextCol == currentCol - 2 && nextRow == currentRow - 2)
+                                    {
+                                        m_Checkers.GameBoard[currentCol - 1, currentRow - 1].Value = ' ';
+                                        return true;
+                                    }
+                                }
+
+
+                            }
+
                         }
                     }
                 }
+
             }
             return false;
         }
 
-
-        private eatDirections isThereEatMove(string i_MoveInput, HumanPlayer i_CurrentPlayer)
+        private bool isThereEatMove(HumanPlayer i_CurrentPlayer)
         {
-            eatDirections isThereEatMove = eatDirections.CantEat;
+            bool isThereEatMove = false;
+            int boardSize = m_Checkers.GameBoard.GetLength(0);
 
-            int currentCol, currentRow, nextCol, nextRow;
-            convertStringInputToIntegers(i_MoveInput, out currentCol, out currentRow, out nextCol, out nextRow);
-
-            if (i_CurrentPlayer.IsWhite)
+            for (int currentCol = 0; currentCol < boardSize; currentCol++)
             {
-                //TODO: need to check somemore conditions.. (the border)
-                if (m_Checkers.GameBoard.GetLength(0) > currentCol + 2) 
-                if ((m_Checkers.GameBoard[currentCol + 1, currentRow + 1].Value == (char)Game.pieces.Black
-                               && m_Checkers.GameBoard[currentCol + 2, currentRow + 2].Value == ' '))
+                for (int currentRow = 0; currentRow < boardSize; currentRow++)
                 {
-                    isThereEatMove = eatDirections.DownRight;
-                }
-                if (m_Checkers.GameBoard.GetLength(0) > currentCol + 2 && currentCol-2 > 0)
-                    if ((m_Checkers.GameBoard[currentCol - 1, currentRow + 1].Value == (char)Game.pieces.Black
-                      && m_Checkers.GameBoard[currentCol - 2, currentRow + 2].Value == ' '))
-                {
-                    isThereEatMove = eatDirections.DownLeft;
-                }
-                    
-            }
-            else
-            {
-                if (m_Checkers.GameBoard.GetLength(0) > currentCol + 2)
-                    if (m_Checkers.GameBoard[currentCol + 1, currentRow - 1].Value == (char)Game.pieces.White
-                    && m_Checkers.GameBoard[currentCol + 2, currentRow - 2].Value == ' ')
-                {
-                    isThereEatMove = eatDirections.UpRight;
-                }
 
-                if (m_Checkers.GameBoard[currentCol - 1, currentRow - 1].Value == (char)Game.pieces.White
-                       && m_Checkers.GameBoard[currentCol - 2, currentRow - 2].Value == ' ')
-                {
-                    isThereEatMove = eatDirections.UpLeft;
+                    if (i_CurrentPlayer.IsWhite) //this is White Turn !
+                    {                            //TODO: need condition for King ! 
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == (char)pieces.White)
+                        {
+                            if (boardSize > currentCol + 2)
+                            {
+                                if ((m_Checkers.GameBoard[currentCol + 1, currentRow + 1].Value == (char)Game.pieces.Black
+                                               && m_Checkers.GameBoard[currentCol + 2, currentRow + 2].Value == ' '))
+                                {
+                                    isThereEatMove = true;
+                                }
+                            }
+                            else if (currentCol >= 2 && boardSize > currentRow + 2)
+                            {
+                                if (m_Checkers.GameBoard.GetLength(0) > currentCol + 2 && currentCol - 2 > 0)
+                                    if ((m_Checkers.GameBoard[currentCol - 1, currentRow + 1].Value == (char)Game.pieces.Black
+                                      && m_Checkers.GameBoard[currentCol - 2, currentRow + 2].Value == ' '))
+                                    {
+                                        isThereEatMove = true;
+                                    }
+                            }
+                        }
+                    }
+                    else //this is black turn !
+                    {
+                        //TODO: need condition for King ! 
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == (char)pieces.Black)
+                        {
+                            if (boardSize > currentCol + 2 && currentRow >= 2)
+                            {
+                                if (m_Checkers.GameBoard[currentCol + 1, currentRow - 1].Value == (char)Game.pieces.White
+                                && m_Checkers.GameBoard[currentCol + 2, currentRow - 2].Value == ' ')
+                                {
+                                    isThereEatMove = true;
+                                }
+                            }
+
+                            if (currentRow >= 2 && currentCol >= 2)
+                                if (m_Checkers.GameBoard[currentCol - 1, currentRow - 1].Value == (char)Game.pieces.White
+                                   && m_Checkers.GameBoard[currentCol - 2, currentRow - 2].Value == ' ')
+                                {
+                                    isThereEatMove = true;
+                                }
+                        }
+                    }
                 }
             }
 
