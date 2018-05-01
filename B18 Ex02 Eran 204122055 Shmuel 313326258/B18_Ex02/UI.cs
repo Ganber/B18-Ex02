@@ -10,7 +10,10 @@ namespace B18_Ex02
         private const string incorrectInputMessage = "Error! Incorrect input.";
         private const string cantSelectMessage = "Error! Cannot select!";
         private const string enterPlayerNameMessage = "Hello! please enter your name (20 letters max)";
+        private const string playAgainstComputerOrPlayerMessage = "enter 1 to play against computer or 2 to play against human player";
         private static uint m_BoardSize;
+
+        private enum playerSymbol { O, X };
 
         public static uint getSizeFromUserInput()
         {
@@ -26,7 +29,8 @@ namespace B18_Ex02
 
         public static void DisplayCurrentPlayerMessage(HumanPlayer currentPlayer)
         {
-            Console.WriteLine(currentPlayer.Name + "'s turn: ");
+            playerSymbol symbol = (playerSymbol) Convert.ToInt32(currentPlayer.IsWhite);
+            Console.WriteLine(currentPlayer.Name + "'s turn: (" + symbol + "):");
         }
 
         public static void DisplayCantMoveHereMessage()
@@ -61,6 +65,37 @@ namespace B18_Ex02
             }
 
             return playerName;
+        }
+
+        public static Game.opponent GetUserRival()
+        {
+            Console.WriteLine(playAgainstComputerOrPlayerMessage);
+            int userInput;
+            int.TryParse(Console.ReadLine(), out userInput);
+
+            while (userInput != (int)Game.opponent.Computer && userInput != (int)Game.opponent.Human)
+            {
+                DisplayIncorrectInputMessage();
+                int.TryParse(Console.ReadLine(), out userInput);
+            }
+
+            return (Game.opponent) userInput;
+        }
+
+        public static void DisplayLastPlayerMove(HumanPlayer i_PreviousPlayer, string i_inputMove)
+        {
+            playerSymbol symbol;
+
+            if (i_PreviousPlayer.IsWhite)
+            {
+                symbol = playerSymbol.X;
+            }
+            else
+            {
+                symbol = playerSymbol.O;
+            }
+
+            Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_inputMove);
         }
 
         public static void GameOverMessage()

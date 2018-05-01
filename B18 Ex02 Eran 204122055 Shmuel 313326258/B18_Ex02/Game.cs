@@ -9,7 +9,8 @@ namespace B18_Ex02
         public const int SMALL_BOARD_SIZE = 6;
 
         public enum pieces { White = 'O', WhiteKing = 'U', Black = 'X', BlackKing = 'K' };
-        public enum eatDirections { UpRight, UpLeft, DownRight, DownLeft, CantEat };
+        //public enum eatDirections { UpRight, UpLeft, DownRight, DownLeft, CantEat };
+        public enum opponent { Computer = 1, Human = 2 };
 
         Board m_Checkers = new Board();
         bool m_GameOver = false;
@@ -18,17 +19,18 @@ namespace B18_Ex02
 
         public void run()
         {
-            HumanPlayer currentPlayerTurn = m_playerOne;
-
             initGame();
+            HumanPlayer currentPlayerTurn = m_playerOne;
             m_Checkers.drawBoard();
 
             while (!m_GameOver)
             {
+                HumanPlayer previousPlayer = currentPlayerTurn;
+                UI.DisplayCurrentPlayerMessage(currentPlayerTurn);
 
-                UI.DisplayCurrentPlayerMessage(m_playerOne); //TODO: needs to be current player, add the symbol at the end of message (X or O)
                 string nextMove = Console.ReadLine();
-                Move(nextMove, currentPlayerTurn);
+                Move(ref nextMove, currentPlayerTurn);
+
 
                 if (currentPlayerTurn.Equals(m_playerOne))
                 {
@@ -38,8 +40,18 @@ namespace B18_Ex02
                 {
                     currentPlayerTurn = m_playerOne;
                 }
+
                 m_Checkers.clearBoard();
                 m_Checkers.drawBoard();
+
+                while (isThereEatMove(previousPlayer)) //use function isStillcanEat
+                {
+                    Console.WriteLine("You Can Eat More BRO !!!");
+                    nextMove = Console.ReadLine();
+                    Move(ref nextMove, currentPlayerTurn);
+                }
+
+                UI.DisplayLastPlayerMove(previousPlayer, nextMove);
             }
             UI.GameOverMessage(); //TODO: exit game
         }
@@ -47,12 +59,20 @@ namespace B18_Ex02
         private void initGame()
         {
             m_playerOne.Name = UI.GetPlayerNameFromInput();
-            m_playerTwo.IsWhite = false;
-
+            
             uint boardSize = UI.getSizeFromUserInput();
+            opponent userOpponent = UI.GetUserRival();
+
+            if (userOpponent == opponent.Human)
+            {
+                m_playerTwo.IsWhite = false;
+                m_playerTwo.Name = UI.GetPlayerNameFromInput();
+            }
+
+            m_Checkers.clearBoard();
             m_Checkers.createEmptyGameBoard(boardSize);
 
-            //TODO: play against comp or human player
+
 
             for (int column = 0; column < boardSize; column = column + 2)
             {
@@ -76,7 +96,7 @@ namespace B18_Ex02
             }
         }
 
-        private void Move(string i_MoveInput, HumanPlayer i_currentPlayer)
+        private void Move(ref string i_MoveInput, HumanPlayer i_currentPlayer)
         {
             bool legalMove;
             legalMove = isMoveInputLegal(i_MoveInput, i_currentPlayer);
@@ -86,7 +106,6 @@ namespace B18_Ex02
                 UI.DisplayIncorrectInputMessage();
                 i_MoveInput = Console.ReadLine();
                 legalMove = isMoveInputLegal(i_MoveInput, i_currentPlayer);
-
             }
 
             int currentCol, currentRow, nextCol, nextRow;
@@ -109,7 +128,6 @@ namespace B18_Ex02
                     && i_moveInput[3] >= 'A' && i_moveInput[3] <= (column + Board.COLUMN_CAPITAL_LETTER)
                     && i_moveInput[4] >= 'a' && i_moveInput[4] <= (column + Board.ROW_SMALL_LETTER));
         }
-
 
         private bool isMoveInputLegal(string i_MoveInput, HumanPlayer i_CurrentPlayer)
         {
@@ -136,7 +154,7 @@ namespace B18_Ex02
                     }
                 }
 
-                else //that's mean we MUST eat, need to check if we eating !
+                else //check if we make eat move
                 {
                     if (i_CurrentPlayer.IsWhite)
                     {
@@ -170,7 +188,7 @@ namespace B18_Ex02
              
                     }
 
-                    else //that's mean Black player.
+                    else //that mean Black player.
                     {
                         if (boardSize > currentCol + 2 &&  currentRow >= 2)
                         {
@@ -274,6 +292,18 @@ namespace B18_Ex02
 
             i_nextCol = i_MoveInput[3] - Board.COLUMN_CAPITAL_LETTER;
             i_nextRow = i_MoveInput[4] - Board.ROW_SMALL_LETTER;
+        }
+
+        private bool isPlayerCanStillEat(string i_MoveInput, HumanPlayer i_CurrentPlayer)
+        {
+            //TODO: need to extract current row and current col from i_MoveInput
+            //      then check if we can eat from current position only
+            if (isThereEatMove(i_CurrentPlayer))
+            {
+
+            }
+
+            return true;
         }
     }
 }
