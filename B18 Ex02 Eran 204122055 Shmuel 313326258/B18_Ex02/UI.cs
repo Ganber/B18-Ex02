@@ -13,7 +13,7 @@ namespace B18_Ex02
         private const string playAgainstComputerOrPlayerMessage = "enter 1 to play against computer or 2 to play against human player";
         private static uint m_BoardSize;
 
-        private enum playerSymbol { O, X };
+        private enum playerSymbol { X=0, O=1 };
 
         public static uint getSizeFromUserInput()
         {
@@ -96,6 +96,11 @@ namespace B18_Ex02
             }
 
             Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_inputMove);
+        }
+
+        public static void DisplayCanEatMoreMessage()
+        {
+            Console.WriteLine("You can eat more");
         }
 
         public static void GameOverMessage()

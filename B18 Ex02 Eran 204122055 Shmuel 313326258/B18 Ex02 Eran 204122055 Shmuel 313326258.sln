@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B18_Ex02", "B18_Ex02\B18_Ex02.csproj", "{98D8D7FF-D6BE-45D8-8DEE-BA106F056C9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B18 Ex02 Eran 204122055 Shmuel 313326258", "B18_Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258.csproj", "{98D8D7FF-D6BE-45D8-8DEE-BA106F056C9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A9DF0BE9-E585-455C-8FCB-0D337A4443ED}
 	EndGlobalSection
 EndGlobal

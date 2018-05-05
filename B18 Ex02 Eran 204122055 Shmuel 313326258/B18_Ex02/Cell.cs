@@ -9,24 +9,38 @@ namespace B18_Ex02
     public class Cell
     {
         private const char EMPTY_CELL = ' ';
-        private bool m_hasPiece;
+        private Game.Pieces m_cellValue = Game.Pieces.EmptyPiece;
 
-        private char m_cellValue = EMPTY_CELL;
 
-        public bool HasPiece
-        {
-            get { return m_hasPiece; }
-            set { m_hasPiece = value; }
-        }
-
-        public char Value
+        public Game.Pieces Value
         {
             get { return m_cellValue; }
             set { m_cellValue = value; }
         }
+
+      public bool isEmpty()
+        {
+            return m_cellValue == Game.Pieces.EmptyPiece;
+        }
+        public bool isWhite()
+        {
+            return (Value == Game.Pieces.White || Value == Game.Pieces.WhiteKing);
+        }
+
+        public bool isBlack()
+        {
+            return (Value == Game.Pieces.Black || Value == Game.Pieces.BlackKing);
+        }
+
+        public bool isKing()
+        {
+            return (Value == Game.Pieces.BlackKing || Value == Game.Pieces.WhiteKing);
+        }
+
+
         public void DrawCell()
         {
-            Console.Write(m_cellValue);
+            Console.Write((char)m_cellValue);
         }
     }
 }

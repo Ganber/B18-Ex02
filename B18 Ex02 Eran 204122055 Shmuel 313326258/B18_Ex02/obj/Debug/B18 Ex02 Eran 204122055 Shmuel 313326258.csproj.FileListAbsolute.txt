@@ -1,0 +1,8 @@
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18 Ex02 Eran 204122055 Shmuel 313326258.csprojResolveAssemblyReference.cache
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18 Ex02 Eran 204122055 Shmuel 313326258.csproj.CoreCompileInputs.cache
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.exe
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.pdb
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.exe.config
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.exe
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.pdb
+C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18 Ex02 Eran 204122055 Shmuel 313326258.csproj.CopyComplete
