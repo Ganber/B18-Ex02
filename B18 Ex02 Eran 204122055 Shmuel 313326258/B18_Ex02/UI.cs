@@ -98,6 +98,22 @@ namespace B18_Ex02
             Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_inputMove);
         }
 
+        internal static void DisplayScoreOfPlayers(Player i_PlayerOne, Player i_PlayerTwo)
+        {
+            Console.WriteLine(i_PlayerOne.Name + "'s Score: " + i_PlayerOne.Score);
+            Console.WriteLine(i_PlayerTwo.Name + "'s Score: " + i_PlayerTwo.Score);
+        }
+
+        internal static void DisplayWinnerMessage(Player i_CurrentPlayer)
+        {
+            Console.WriteLine("The winner is: " + i_CurrentPlayer);
+        }
+
+        internal static void DisplayTieMessage()
+        {
+            Console.WriteLine("Game end with a tie !");
+        }
+
         public static void DisplayCanEatMoreMessage()
         {
             Console.WriteLine("You can eat more");

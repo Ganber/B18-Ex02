@@ -55,15 +55,16 @@ namespace B18_Ex02
 
         public void drawBoard()
         {
+            int boardSize = m_gameBoard.GetLength(0);
             DrawColumnHeader();
 
-            for (int row = 0; row < m_gameBoard.GetLength(0); row++)
+            for (int row = 0; row < boardSize; row++)
             {
                 Console.WriteLine();
 
                 DrawRowHeader(row);
 
-                for (int column = 0; column < m_gameBoard.GetLength(0); column++)
+                for (int column = 0; column < boardSize; column++)
                 {
                     Console.Write("| ");
                     m_gameBoard[column, row].DrawCell(); 
@@ -73,7 +74,7 @@ namespace B18_Ex02
                 Console.WriteLine();
 
                 Console.Write("   ");
-                for (int column = 0; column < m_gameBoard.GetLength(0) * (MARGIN_SIZE - 1) + 1; column++)
+                for (int column = 0; column < boardSize * (MARGIN_SIZE - 1) + 1; column++)
                 {
                     Console.Write("=");
                 }

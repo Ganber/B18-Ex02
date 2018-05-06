@@ -15,7 +15,6 @@ namespace B18_Ex02
         }
     }
 
-    //TODO: Last Move printing.
     //TODO: ?Maybe? Change all Func(int CurrentColumn,int CurrentRow) To >> Func(Cell CurrentCell)
     //TODO: press Q to exit game if the player situation is less good
     //TODO: Make the game not depending on UI

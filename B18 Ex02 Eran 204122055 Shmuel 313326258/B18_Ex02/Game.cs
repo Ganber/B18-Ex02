@@ -22,6 +22,7 @@ namespace B18_Ex02
             initGame();
             Player CurrentPlayer = m_playerOne;
             Player OpponentPlayer = m_playerTwo;
+
             m_Checkers.drawBoard();
             int OpponentPlayerSolidersCounter = 0;
             Move CurrentMove = null;
@@ -35,12 +36,12 @@ namespace B18_Ex02
                 {
                     if (nextMoveInputString != null)
                         UI.DisplayLastPlayerMove(OpponentPlayer, nextMoveInputString);
-                            
+
                     UI.DisplayCurrentPlayerMessage(CurrentPlayer);
                     nextMoveInputString = Console.ReadLine();
 
 
-                     lastMove = CurrentMove;
+                    lastMove = CurrentMove;
                     CurrentMove = new Move(nextMoveInputString);
 
                     while (!isStringInputLegal(nextMoveInputString) || !isValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
@@ -57,15 +58,12 @@ namespace B18_Ex02
                 else
                 {
                     UI.DisplayWatingToPcMove();
-                     lastMove = CurrentMove;
+                    lastMove = CurrentMove;
                     CurrentMove = getComputerMove(lastMove, isSequenceEating, m_playerTwo);
                 }
 
                 OpponentPlayerSolidersCounter = getPlayerSolidersCount(OpponentPlayer);
                 makeMove(CurrentMove);
-
-                m_Checkers.clearBoard();
-                m_Checkers.drawBoard();
 
                 isSequenceEating = true;
 
@@ -75,17 +73,42 @@ namespace B18_Ex02
                     isSequenceEating = false;
                     swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
                 }
-                else if (isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, isSequenceEating) == null)
+                else
                 {
-                    //cant eat more.
-                    swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
-                    isSequenceEating = false;
+                    if (isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, isSequenceEating) == null)
+                    {
+                        //cant eat more.
+                        swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
+                        isSequenceEating = false;
+                    }
                 }
 
+                m_Checkers.clearBoard();
+                m_Checkers.drawBoard();
+
+
+
+            }
+            m_playerOne.Score = getPlayerSolidersCount(m_playerOne) - getPlayerSolidersCount(m_playerTwo);
+            m_playerTwo.Score = getPlayerSolidersCount(m_playerTwo) - getPlayerSolidersCount(m_playerOne);
+
+            if (m_playerOne.Score > m_playerTwo.Score)
+            {
+                UI.DisplayWinnerMessage(m_playerOne);
+            }
+            else if (m_playerTwo.Score > m_playerOne.Score)
+            {
+                UI.DisplayWinnerMessage(m_playerTwo);
+            }
+            else
+            {
+                UI.DisplayTieMessage();
             }
 
             UI.GameOverMessage(); //TODO: exit game
         }
+
+       
 
         private Move getComputerMove(Move lastMove, bool isSequenceEating, Player m_playerTwo)
         {
@@ -414,15 +437,17 @@ namespace B18_Ex02
                 {
                     if (i_currentPlayer.IsWhite)
                     {
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.White
-                            || m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.WhiteKing)
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.White)
                             solidersCount++;
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.WhiteKing)
+                            solidersCount += 4;
                     }
                     else
                     {
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.Black
-                            || m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.BlackKing)
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.Black)
                             solidersCount++;
+                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.BlackKing)
+                            solidersCount += 4;
                     }
                 }
             }
