@@ -25,17 +25,22 @@ namespace B18_Ex02
             m_Checkers.drawBoard();
             int OpponentPlayerSolidersCounter = 0;
             Move CurrentMove = null;
+            Move lastMove = null;
             bool isSequenceEating = false;
-            string nextMoveInputString;
+            string nextMoveInputString = null;
+
             while (!m_GameOver)
             {
-                if (CurrentPlayer == m_playerOne)
+                if (CurrentPlayer.isHuman)
                 {
+                    if (nextMoveInputString != null)
+                        UI.DisplayLastPlayerMove(OpponentPlayer, nextMoveInputString);
+                            
                     UI.DisplayCurrentPlayerMessage(CurrentPlayer);
                     nextMoveInputString = Console.ReadLine();
 
 
-                    Move lastMove = CurrentMove;
+                     lastMove = CurrentMove;
                     CurrentMove = new Move(nextMoveInputString);
 
                     while (!isStringInputLegal(nextMoveInputString) || !isValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
@@ -52,7 +57,7 @@ namespace B18_Ex02
                 else
                 {
                     UI.DisplayWatingToPcMove();
-                    Move lastMove = CurrentMove;
+                     lastMove = CurrentMove;
                     CurrentMove = getComputerMove(lastMove, isSequenceEating, m_playerTwo);
                 }
 
@@ -353,6 +358,7 @@ namespace B18_Ex02
             else
             {
                 m_playerTwo.Name = GamePlayer.Computer.ToString();
+                m_playerTwo.isHuman = false;
             }
 
             m_Checkers.clearBoard();

@@ -88,11 +88,11 @@ namespace B18_Ex02
 
             if (i_PreviousPlayer.IsWhite)
             {
-                symbol = playerSymbol.X;
+                symbol = playerSymbol.O;
             }
             else
             {
-                symbol = playerSymbol.O;
+                symbol = playerSymbol.X;
             }
 
             Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_inputMove);
