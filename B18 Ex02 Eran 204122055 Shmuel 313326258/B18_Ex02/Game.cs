@@ -27,9 +27,6 @@ namespace B18_Ex02
             Move CurrentMove = null;
             bool isSequenceEating = false;
 
-
-
-
             while (!m_GameOver)
             {
                 UI.DisplayCurrentPlayerMessage(CurrentPlayer);
@@ -58,10 +55,10 @@ namespace B18_Ex02
                 isSequenceEating = false;
                 if (OpponentPlayerSolidersCounter == getPlayerSolidersCount(OpponentPlayer))
                 {
-                    //not a Eat move.
+                    //not an Eat move.
                     swapCurrentPlayer(ref CurrentPlayer, ref OpponentPlayer);
                 }
-                else if (!isAbleToEatMore(CurrentMove.NextCoulmn, CurrentMove.NextRow)) //TODO: can use isAbleToEat with boolean parameter.
+                else if (!isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, true))
                 {
                     //cant eat more.
                     swapCurrentPlayer(ref CurrentPlayer, ref OpponentPlayer);
@@ -70,55 +67,10 @@ namespace B18_Ex02
                 {
                     //we made eat move, and we can eat more.
                     isSequenceEating = true;
-
                 }
-
-
             }
 
             UI.GameOverMessage(); //TODO: exit game
-        }
-
-        private bool isAbleToEatMore(int currentCoulmn, int currentRow)
-        {
-            bool ableToEat = false;
-            Cell currentCell = m_Checkers.GameBoard[currentCoulmn, currentRow];
-            int boardSize = m_Checkers.GameBoard.GetLength(0);
-
-            if (currentRow + 2 < boardSize && currentCoulmn + 2 < boardSize)
-            {
-                if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn + 1, currentRow + 1]) &&
-                    m_Checkers.GameBoard[currentCoulmn + 2, currentRow + 2].isEmpty())
-                    ableToEat = true;
-            }
-
-            if (currentRow + 2 < boardSize && currentCoulmn >= 2)
-            {
-                if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn - 1, currentRow + 1]) &&
-                    m_Checkers.GameBoard[currentCoulmn - 2, currentRow + 2].isEmpty())
-                    ableToEat = true;
-            }
-
-
-
-            if (currentRow >= 2 && currentCoulmn >= 2)
-            {
-                if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn - 1, currentRow - 1]) &&
-                    m_Checkers.GameBoard[currentCoulmn - 2, currentRow - 2].isEmpty())
-                    ableToEat = true;
-            }
-
-            if (currentRow >= 2 && currentCoulmn + 2 < boardSize)
-            {
-                if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn + 1, currentRow - 1]) &&
-                    m_Checkers.GameBoard[currentCoulmn + 2, currentRow - 2].isEmpty())
-                    ableToEat = true;
-            }
-
-
-
-
-            return ableToEat;
         }
 
         private void makeMove(Move i_currentMove)
@@ -151,13 +103,13 @@ namespace B18_Ex02
 
         }
 
-        private bool isAbleToEat(int currentCoulmn, int currentRow)
+        private bool isAbleToEat(int currentCoulmn, int currentRow, bool i_IsIntEatingSequence)
         {
             bool ableToEat = false;
             Cell currentCell = m_Checkers.GameBoard[currentCoulmn, currentRow];
             int boardSize = m_Checkers.GameBoard.GetLength(0);
 
-            if (currentCell.isWhite() || currentCell.isKing())
+            if (currentCell.isWhite() || currentCell.isKing() || i_IsIntEatingSequence)
             {
                 if (currentRow + 2 < boardSize && currentCoulmn + 2 < boardSize)
                 {
@@ -174,7 +126,7 @@ namespace B18_Ex02
                 }
             }
 
-            if (currentCell.isBlack() || currentCell.isKing())
+            if (currentCell.isBlack() || currentCell.isKing() || i_IsIntEatingSequence)
             {
                 if (currentRow >= 2 && currentCoulmn >= 2)
                 {
@@ -190,8 +142,6 @@ namespace B18_Ex02
                         ableToEat = true;
                 }
             }
-
-
 
             return ableToEat;
         }
@@ -301,7 +251,6 @@ namespace B18_Ex02
             }
 
             return eatRes;
-
         }
 
         private bool checkIfPlayerCanEat(HumanPlayer i_currentPlayer)
@@ -315,13 +264,13 @@ namespace B18_Ex02
                     if (i_currentPlayer.IsWhite)
                     {
                         if (m_Checkers.GameBoard[coulmn, row].isWhite())
-                            if (isAbleToEat(coulmn, row))
+                            if (isAbleToEat(coulmn, row, false))
                                 canEatRes = true;
                     }
                     else
                     {
                         if (m_Checkers.GameBoard[coulmn, row].isBlack())
-                            if (isAbleToEat(coulmn, row))
+                            if (isAbleToEat(coulmn, row, false))
                                 canEatRes = true;
                     }
                 }
@@ -359,8 +308,6 @@ namespace B18_Ex02
 
             m_Checkers.clearBoard();
             m_Checkers.createEmptyGameBoard(boardSize);
-
-
 
             for (int column = 0; column < boardSize; column = column + 2)
             {
@@ -422,7 +369,6 @@ namespace B18_Ex02
                             || m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.BlackKing)
                             solidersCount++;
                     }
-
                 }
             }
             return solidersCount;
