@@ -39,7 +39,7 @@
     <Compile Include="Board.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="HumanPlayer.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="UI.cs" />

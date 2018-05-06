@@ -18,7 +18,14 @@
                 m_NextRow = i_MoveInput[4] - Board.ROW_SMALL_LETTER;
             }
         }
+        public Move(int i_CurrentCoulmn, int i_CurrentRow, int i_NextCoulmn, int i_NextRow)
+        {
+            m_CurrentCoulmn = i_CurrentCoulmn;
+            m_CurrentRow = i_CurrentRow;
+            m_NextCoulmn = i_NextCoulmn;
+            m_NextRow = i_NextRow;
 
+        }
         public int CurrentRow
         {
             get { return m_CurrentRow; }

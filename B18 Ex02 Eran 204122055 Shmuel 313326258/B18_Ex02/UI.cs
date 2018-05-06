@@ -27,7 +27,7 @@ namespace B18_Ex02
             return m_BoardSize;
         }
 
-        public static void DisplayCurrentPlayerMessage(HumanPlayer currentPlayer)
+        public static void DisplayCurrentPlayerMessage(Player currentPlayer)
         {
             playerSymbol symbol = (playerSymbol) Convert.ToInt32(currentPlayer.IsWhite);
             Console.WriteLine(currentPlayer.Name + "'s turn: (" + symbol + "):");
@@ -67,22 +67,22 @@ namespace B18_Ex02
             return playerName;
         }
 
-        public static Game.opponent GetUserRival()
+        public static Game.GamePlayer GetUserRival()
         {
             Console.WriteLine(playAgainstComputerOrPlayerMessage);
             int userInput;
             int.TryParse(Console.ReadLine(), out userInput);
 
-            while (userInput != (int)Game.opponent.Computer && userInput != (int)Game.opponent.Human)
+            while (userInput != (int)Game.GamePlayer.Computer && userInput != (int)Game.GamePlayer.Human)
             {
                 DisplayIncorrectInputMessage();
                 int.TryParse(Console.ReadLine(), out userInput);
             }
 
-            return (Game.opponent) userInput;
+            return (Game.GamePlayer) userInput;
         }
 
-        public static void DisplayLastPlayerMove(HumanPlayer i_PreviousPlayer, string i_inputMove)
+        public static void DisplayLastPlayerMove(Player i_PreviousPlayer, string i_inputMove)
         {
             playerSymbol symbol;
 
@@ -101,6 +101,12 @@ namespace B18_Ex02
         public static void DisplayCanEatMoreMessage()
         {
             Console.WriteLine("You can eat more");
+        }
+
+        public static void DisplayWatingToPcMove()
+        {
+            Console.WriteLine("Please Wait to PC move..");
+            System.Threading.Thread.Sleep(1000);
         }
 
         public static void GameOverMessage()

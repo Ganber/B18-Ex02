@@ -10,40 +10,50 @@ namespace B18_Ex02
 
         public enum Pieces { White = 'O', WhiteKing = 'U', Black = 'X', BlackKing = 'K', EmptyPiece = ' ' };
 
-        public enum opponent { Computer = 1, Human = 2 };
+        public enum GamePlayer { Computer = 1, Human = 2 };
 
         Board m_Checkers = new Board();
         bool m_GameOver = false;
-        private HumanPlayer m_playerOne = new HumanPlayer();
-        private HumanPlayer m_playerTwo = new HumanPlayer();
+        private Player m_playerOne = new Player();
+        private Player m_playerTwo = new Player();
 
         public void run()
         {
             initGame();
-            HumanPlayer CurrentPlayer = m_playerOne;
-            HumanPlayer OpponentPlayer = m_playerTwo;
+            Player CurrentPlayer = m_playerOne;
+            Player OpponentPlayer = m_playerTwo;
             m_Checkers.drawBoard();
             int OpponentPlayerSolidersCounter = 0;
             Move CurrentMove = null;
             bool isSequenceEating = false;
-
+            string nextMoveInputString;
             while (!m_GameOver)
             {
-                UI.DisplayCurrentPlayerMessage(CurrentPlayer);
-
-                string nextMoveInputString = Console.ReadLine();
-                Move lastMove = CurrentMove;
-                CurrentMove = new Move(nextMoveInputString);
-
-                while (!isStringInputLegal(nextMoveInputString) || !isValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
+                if (CurrentPlayer == m_playerOne)
                 {
-                    if (!isStringInputLegal(nextMoveInputString))
-                        UI.DisplayIncorrectInputMessage();
-                    else
-                        UI.DisplayCantMoveHereMessage();
-
+                    UI.DisplayCurrentPlayerMessage(CurrentPlayer);
                     nextMoveInputString = Console.ReadLine();
+
+
+                    Move lastMove = CurrentMove;
                     CurrentMove = new Move(nextMoveInputString);
+
+                    while (!isStringInputLegal(nextMoveInputString) || !isValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
+                    {
+                        if (!isStringInputLegal(nextMoveInputString))
+                            UI.DisplayIncorrectInputMessage();
+                        else
+                            UI.DisplayCantMoveHereMessage();
+
+                        nextMoveInputString = Console.ReadLine();
+                        CurrentMove = new Move(nextMoveInputString);
+                    }
+                }
+                else
+                {
+                    UI.DisplayWatingToPcMove();
+                    Move lastMove = CurrentMove;
+                    CurrentMove = getComputerMove(lastMove, isSequenceEating, m_playerTwo);
                 }
 
                 OpponentPlayerSolidersCounter = getPlayerSolidersCount(OpponentPlayer);
@@ -52,25 +62,58 @@ namespace B18_Ex02
                 m_Checkers.clearBoard();
                 m_Checkers.drawBoard();
 
-                isSequenceEating = false;
+                isSequenceEating = true;
+
                 if (OpponentPlayerSolidersCounter == getPlayerSolidersCount(OpponentPlayer))
                 {
                     //not an Eat move.
-                    swapCurrentPlayer(ref CurrentPlayer, ref OpponentPlayer);
+                    isSequenceEating = false;
+                    swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
                 }
-                else if (!isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, true))
+                else if (isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, isSequenceEating) == null)
                 {
                     //cant eat more.
-                    swapCurrentPlayer(ref CurrentPlayer, ref OpponentPlayer);
+                    swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
+                    isSequenceEating = false;
                 }
-                else
-                {
-                    //we made eat move, and we can eat more.
-                    isSequenceEating = true;
-                }
+
             }
 
             UI.GameOverMessage(); //TODO: exit game
+        }
+
+        private Move getComputerMove(Move lastMove, bool isSequenceEating, Player m_playerTwo)
+        {
+            Move resMove;
+            Move tempMove;
+            int boardSize = m_Checkers.GameBoard.GetLength(0);
+
+            //pc is always player 2.
+            resMove = checkIfPlayerCanEat(m_playerTwo,isSequenceEating);
+
+            if (resMove == null) //to ensure that if we can eat, we eat.
+            {
+                for (int column = 1; column < boardSize - 1; column++)
+                {
+                    for (int row = 1; row < boardSize - 1; row++)
+                    {
+                        if (m_Checkers.GameBoard[column, row].isWhite())
+                        {
+                            for (int nextRowMove = -1; nextRowMove < 2; nextRowMove += 2)
+                                for (int nextColMove = 1; nextColMove > -2; nextColMove -= 2)
+                                {
+                                    tempMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                    if (isValidMove(tempMove, lastMove, isSequenceEating, m_playerTwo))
+                                    {
+                                        resMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+
+            return resMove;
         }
 
         private void makeMove(Move i_currentMove)
@@ -96,18 +139,18 @@ namespace B18_Ex02
             m_Checkers.GameBoard[currentCoulmn, currentRow].Value = Pieces.EmptyPiece;
 
             if (Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 2)
-            { //this mean we eat, and we need now to delete the opponent.
+            { //this mean we eat, and we need now to delete the Player.
                 m_Checkers.GameBoard[(nextCoulmn + currentCoulmn) / 2, (nextRow + currentRow) / 2].Value = Pieces.EmptyPiece;
             }
 
 
         }
 
-        private bool isAbleToEat(int currentCoulmn, int currentRow, bool i_IsIntEatingSequence)
+        private Move isAbleToEat(int currentCoulmn, int currentRow, bool i_IsIntEatingSequence)
         {
-            bool ableToEat = false;
             Cell currentCell = m_Checkers.GameBoard[currentCoulmn, currentRow];
             int boardSize = m_Checkers.GameBoard.GetLength(0);
+            Move eatMove = null; //assume we cant eat.
 
             if (currentCell.isWhite() || currentCell.isKing() || i_IsIntEatingSequence)
             {
@@ -115,14 +158,14 @@ namespace B18_Ex02
                 {
                     if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn + 1, currentRow + 1]) &&
                         m_Checkers.GameBoard[currentCoulmn + 2, currentRow + 2].isEmpty())
-                        ableToEat = true;
+                        eatMove = new Move(currentCoulmn, currentRow, currentCoulmn + 2, currentRow + 2);
                 }
 
                 if (currentRow + 2 < boardSize && currentCoulmn >= 2)
                 {
                     if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn - 1, currentRow + 1]) &&
                         m_Checkers.GameBoard[currentCoulmn - 2, currentRow + 2].isEmpty())
-                        ableToEat = true;
+                        eatMove = new Move(currentCoulmn, currentRow, currentCoulmn - 2, currentRow + 2);
                 }
             }
 
@@ -132,18 +175,18 @@ namespace B18_Ex02
                 {
                     if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn - 1, currentRow - 1]) &&
                         m_Checkers.GameBoard[currentCoulmn - 2, currentRow - 2].isEmpty())
-                        ableToEat = true;
+                        eatMove = new Move(currentCoulmn, currentRow, currentCoulmn - 2, currentRow - 2);
                 }
 
                 if (currentRow >= 2 && currentCoulmn + 2 < boardSize)
                 {
                     if (checkIfOpponent(currentCell, m_Checkers.GameBoard[currentCoulmn + 1, currentRow - 1]) &&
                         m_Checkers.GameBoard[currentCoulmn + 2, currentRow - 2].isEmpty())
-                        ableToEat = true;
+                        eatMove = new Move(currentCoulmn, currentRow, currentCoulmn + 2, currentRow - 2);
                 }
             }
 
-            return ableToEat;
+            return eatMove;
         }
         private bool checkIfOpponent(Cell i_cellOne, Cell i_cellTwo)
         {
@@ -157,7 +200,7 @@ namespace B18_Ex02
             return res;
         }
 
-        private bool isValidMove(Move i_currentMove, Move i_lastMove, bool i_SequenceEat, HumanPlayer i_currentPlayer)
+        private bool isValidMove(Move i_currentMove, Move i_lastMove, bool i_SequenceEat, Player i_currentPlayer)
         {
             bool isThisValidMove = false;
 
@@ -174,7 +217,7 @@ namespace B18_Ex02
             }
             else
             {
-                if (checkIfPlayerCanEat(i_currentPlayer))
+                if (checkIfPlayerCanEat(i_currentPlayer,i_SequenceEat) != null)
                 {
                     if (isPlayerDoEatMove(i_currentMove))
                         isThisValidMove = true;
@@ -212,6 +255,7 @@ namespace B18_Ex02
             }
 
             //check that we not overrider another piece.
+
             if (m_Checkers.GameBoard[i_currentMove.NextCoulmn, i_currentMove.NextRow].Value != Pieces.EmptyPiece)
                 isThisValidMove = false;
 
@@ -253,10 +297,11 @@ namespace B18_Ex02
             return eatRes;
         }
 
-        private bool checkIfPlayerCanEat(HumanPlayer i_currentPlayer)
+        private Move checkIfPlayerCanEat(Player i_currentPlayer,bool i_isSequenceEating)
         {
             int boardSize = m_Checkers.GameBoard.GetLength(0);
-            bool canEatRes = false;
+            Move canEatRes = null;
+
             for (int coulmn = 0; coulmn < boardSize; coulmn++)
             {
                 for (int row = 0; row < boardSize; row++)
@@ -264,14 +309,14 @@ namespace B18_Ex02
                     if (i_currentPlayer.IsWhite)
                     {
                         if (m_Checkers.GameBoard[coulmn, row].isWhite())
-                            if (isAbleToEat(coulmn, row, false))
-                                canEatRes = true;
+                            if (isAbleToEat(coulmn, row, i_isSequenceEating) != null)
+                                canEatRes = isAbleToEat(coulmn, row, i_isSequenceEating);
                     }
                     else
                     {
                         if (m_Checkers.GameBoard[coulmn, row].isBlack())
-                            if (isAbleToEat(coulmn, row, false))
-                                canEatRes = true;
+                            if (isAbleToEat(coulmn, row, i_isSequenceEating) != null)
+                                canEatRes = isAbleToEat(coulmn, row, i_isSequenceEating);
                     }
                 }
             }
@@ -279,7 +324,7 @@ namespace B18_Ex02
             return canEatRes;
         }
 
-        private void swapCurrentPlayer(ref HumanPlayer currentPlayer, ref HumanPlayer opponentPlayer)
+        private void swapPlayers(ref Player currentPlayer, ref Player opponentPlayer)
         {
             if (currentPlayer == m_playerOne)
             {
@@ -296,14 +341,18 @@ namespace B18_Ex02
         private void initGame()
         {
             m_playerOne.Name = UI.GetPlayerNameFromInput();
+            m_playerOne.IsWhite = false;
 
             uint boardSize = UI.getSizeFromUserInput();
-            opponent userOpponent = UI.GetUserRival();
+            GamePlayer userOpponent = UI.GetUserRival();
 
-            if (userOpponent == opponent.Human)
+            if (userOpponent == GamePlayer.Human)
             {
-                m_playerTwo.IsWhite = false;
                 m_playerTwo.Name = UI.GetPlayerNameFromInput();
+            }
+            else
+            {
+                m_playerTwo.Name = GamePlayer.Computer.ToString();
             }
 
             m_Checkers.clearBoard();
@@ -348,7 +397,7 @@ namespace B18_Ex02
             i_nextRow = i_MoveInput[4] - Board.ROW_SMALL_LETTER;
         }
 
-        private int getPlayerSolidersCount(HumanPlayer i_currentPlayer)
+        private int getPlayerSolidersCount(Player i_currentPlayer)
         {
             int solidersCount = 0;
             int boardSize = m_Checkers.GameBoard.GetLength(0);
