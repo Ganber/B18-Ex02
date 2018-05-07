@@ -41,7 +41,7 @@
             get { return m_NextRow; }
             set { m_NextRow = value; }
         }
-        public int NextCoulmn
+        public int NextColumn
         {
             get { return m_NextCoulmn; }
             set { m_NextCoulmn = value; }

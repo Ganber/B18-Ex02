@@ -59,7 +59,7 @@ namespace B18_Ex02
                 {
                     UI.DisplayWatingToPcMove();
                     lastMove = CurrentMove;
-                    CurrentMove = getComputerMove(lastMove, isSequenceEating, m_playerTwo);
+                    CurrentMove = getAvailableMove(lastMove, isSequenceEating, m_playerTwo);
                 }
 
                 OpponentPlayerSolidersCounter = getPlayerSolidersCount(OpponentPlayer);
@@ -75,7 +75,7 @@ namespace B18_Ex02
                 }
                 else
                 {
-                    if (isAbleToEat(CurrentMove.NextCoulmn, CurrentMove.NextRow, isSequenceEating) == null)
+                    if (isAbleToEat(CurrentMove.NextColumn, CurrentMove.NextRow, isSequenceEating) == null)
                     {
                         //cant eat more.
                         swapPlayers(ref CurrentPlayer, ref OpponentPlayer);
@@ -83,12 +83,12 @@ namespace B18_Ex02
                     }
                 }
 
+                m_GameOver = isGameOver(lastMove, isSequenceEating);
+
                 m_Checkers.clearBoard();
                 m_Checkers.drawBoard();
-
-
-
             }
+
             m_playerOne.Score = getPlayerSolidersCount(m_playerOne) - getPlayerSolidersCount(m_playerTwo);
             m_playerTwo.Score = getPlayerSolidersCount(m_playerTwo) - getPlayerSolidersCount(m_playerOne);
 
@@ -108,34 +108,65 @@ namespace B18_Ex02
             UI.GameOverMessage(); //TODO: exit game
         }
 
-       
-
-        private Move getComputerMove(Move lastMove, bool isSequenceEating, Player m_playerTwo)
+        private bool isGameOver(Move i_LastMove, bool i_SequenceEat)
         {
-            Move resMove;
+            bool isGameOver = false;
+
+            if (getPlayerSolidersCount(m_playerOne) == 0 || getPlayerSolidersCount(m_playerTwo) == 0)
+            {
+                isGameOver = true;
+            }
+            if (getAvailableMove(i_LastMove, i_SequenceEat, m_playerOne) == null || getAvailableMove(i_LastMove, i_SequenceEat, m_playerTwo) == null)
+            {
+                isGameOver = true;
+            }
+
+            return isGameOver;
+        }
+
+        private Move getAvailableMove(Move lastMove, bool isSequenceEating, Player m_CurrentPlayer)
+        {
+            Move resMove = null;
             Move tempMove;
             int boardSize = m_Checkers.GameBoard.GetLength(0);
 
-            //pc is always player 2.
-            resMove = checkIfPlayerCanEat(m_playerTwo,isSequenceEating);
+            resMove = checkIfPlayerCanEat(m_CurrentPlayer, isSequenceEating);
 
             if (resMove == null) //to ensure that if we can eat, we eat.
             {
-                for (int column = 1; column < boardSize - 1; column++)
+                for (int column = 0; column < boardSize; column++)
                 {
-                    for (int row = 1; row < boardSize - 1; row++)
+                    for (int row = 0; row < boardSize; row++)
                     {
-                        if (m_Checkers.GameBoard[column, row].isWhite())
+                        if (m_CurrentPlayer.IsWhite)
                         {
-                            for (int nextRowMove = -1; nextRowMove < 2; nextRowMove += 2)
-                                for (int nextColMove = 1; nextColMove > -2; nextColMove -= 2)
-                                {
-                                    tempMove = new Move(column, row, column + nextColMove, row + nextRowMove);
-                                    if (isValidMove(tempMove, lastMove, isSequenceEating, m_playerTwo))
+                            if (m_Checkers.GameBoard[column, row].isWhite())
+                            {
+                                for (int nextRowMove = -1; nextRowMove < 2; nextRowMove += 2)
+                                    for (int nextColMove = 1; nextColMove > -2; nextColMove -= 2)
                                     {
-                                        resMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                        tempMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                        if (isValidMove(tempMove, lastMove, isSequenceEating, m_CurrentPlayer))
+                                        {
+                                            resMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                        }
                                     }
-                                }
+                            }
+                        }
+                        else
+                        {
+                            if (m_Checkers.GameBoard[column, row].isBlack())
+                            {
+                                for (int nextRowMove = -1; nextRowMove < 2; nextRowMove += 2)
+                                    for (int nextColMove = 1; nextColMove > -2; nextColMove -= 2)
+                                    {
+                                        tempMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                        if (isValidMove(tempMove, lastMove, isSequenceEating, m_CurrentPlayer))
+                                        {
+                                            resMove = new Move(column, row, column + nextColMove, row + nextRowMove);
+                                        }
+                                    }
+                            }
                         }
                     }
                 }
@@ -149,7 +180,7 @@ namespace B18_Ex02
             int currentRow = i_currentMove.CurrentRow;
             int currentCoulmn = i_currentMove.CurrentCoulmn;
             int nextRow = i_currentMove.NextRow;
-            int nextCoulmn = i_currentMove.NextCoulmn;
+            int nextCoulmn = i_currentMove.NextColumn;
 
             if (m_Checkers.GameBoard[currentCoulmn, currentRow].Value == Pieces.White)
             {
@@ -166,7 +197,7 @@ namespace B18_Ex02
             m_Checkers.GameBoard[nextCoulmn, nextRow].Value = m_Checkers.GameBoard[currentCoulmn, currentRow].Value;
             m_Checkers.GameBoard[currentCoulmn, currentRow].Value = Pieces.EmptyPiece;
 
-            if (Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 2)
+            if (Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextColumn) == 2)
             { //this mean we eat, and we need now to delete the Player.
                 m_Checkers.GameBoard[(nextCoulmn + currentCoulmn) / 2, (nextRow + currentRow) / 2].Value = Pieces.EmptyPiece;
             }
@@ -227,81 +258,94 @@ namespace B18_Ex02
 
             return res;
         }
+        private bool isMoveInputLegal(Move i_move)
+        {
+            int boardSize = m_Checkers.GameBoard.GetLength(0);
+            bool legalMove = true;
 
+            if (i_move.CurrentCoulmn < 0 || i_move.CurrentRow < 0 || i_move.NextColumn < 0 || i_move.NextRow < 0)
+                legalMove = false;
+
+            if (i_move.CurrentCoulmn >= boardSize || i_move.CurrentRow >= boardSize || i_move.NextColumn >= boardSize || i_move.NextRow >= boardSize)
+                legalMove = false;
+
+            return legalMove;
+        }
         private bool isValidMove(Move i_currentMove, Move i_lastMove, bool i_SequenceEat, Player i_currentPlayer)
         {
             bool isThisValidMove = false;
 
-            Cell currentCell = m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow];
-            if (i_SequenceEat)
+            if (isMoveInputLegal(i_currentMove))
             {
-                if (i_lastMove.NextCoulmn == i_currentMove.CurrentCoulmn && i_lastMove.NextRow == i_currentMove.CurrentRow)
+                Cell currentCell = m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow];
+                if (i_SequenceEat)
                 {
-                    if (isPlayerDoEatMove(i_currentMove))
+                    if (i_lastMove.NextColumn == i_currentMove.CurrentCoulmn && i_lastMove.NextRow == i_currentMove.CurrentRow)
                     {
-                        isThisValidMove = true;
+                        if (isPlayerDoEatMove(i_currentMove))
+                        {
+                            isThisValidMove = true;
+                        }
                     }
                 }
-            }
-            else
-            {
-                if (checkIfPlayerCanEat(i_currentPlayer,i_SequenceEat) != null)
-                {
-                    if (isPlayerDoEatMove(i_currentMove))
-                        isThisValidMove = true;
-                }
-
-
                 else
                 {
-                    //if we cant eat, need to be valid move.
-                    if (currentCell.isKing())
+                    if (checkIfPlayerCanEat(i_currentPlayer, i_SequenceEat) != null)
                     {
-                        if (Math.Abs(i_currentMove.NextRow - i_currentMove.CurrentRow) == 1
-                         && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 1)
-                        {
+                        if (isPlayerDoEatMove(i_currentMove))
                             isThisValidMove = true;
-                        }
                     }
-                    else if (currentCell.isWhite())
+
+                    else
                     {
-                        if (i_currentMove.NextRow - i_currentMove.CurrentRow == 1
-                         && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 1)
+                        //if we cant eat, need to be valid move.
+                        if (currentCell.isKing())
                         {
-                            isThisValidMove = true;
+                            if (Math.Abs(i_currentMove.NextRow - i_currentMove.CurrentRow) == 1
+                             && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextColumn) == 1)
+                            {
+                                isThisValidMove = true;
+                            }
                         }
-                    }
-                    else if (currentCell.isBlack())
-                    {
-                        if (i_currentMove.CurrentRow - i_currentMove.NextRow == 1
-                         && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 1)
+                        else if (currentCell.isWhite())
                         {
-                            isThisValidMove = true;
+                            if (i_currentMove.NextRow - i_currentMove.CurrentRow == 1
+                             && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextColumn) == 1)
+                            {
+                                isThisValidMove = true;
+                            }
+                        }
+                        else if (currentCell.isBlack())
+                        {
+                            if (i_currentMove.CurrentRow - i_currentMove.NextRow == 1
+                             && Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextColumn) == 1)
+                            {
+                                isThisValidMove = true;
+                            }
                         }
                     }
                 }
-            }
 
-            //check that we not overrider another piece.
+                //check that we not overrider another piece.
 
-            if (m_Checkers.GameBoard[i_currentMove.NextCoulmn, i_currentMove.NextRow].Value != Pieces.EmptyPiece)
-                isThisValidMove = false;
-
-            //now we check if the player is moving hes soilders !
-            if (i_currentPlayer.IsWhite)
-            {
-                if (m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.Black
-                    || m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.BlackKing)
+                if (m_Checkers.GameBoard[i_currentMove.NextColumn, i_currentMove.NextRow].Value != Pieces.EmptyPiece)
                     isThisValidMove = false;
 
-            }
-            else
-            {
-                if (m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.White
-                  || m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.WhiteKing)
-                    isThisValidMove = false;
-            }
+                //now we check if the player is moving hes soilders !
+                if (i_currentPlayer.IsWhite)
+                {
+                    if (m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.Black
+                        || m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.BlackKing)
+                        isThisValidMove = false;
 
+                }
+                else
+                {
+                    if (m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.White
+                      || m_Checkers.GameBoard[i_currentMove.CurrentCoulmn, i_currentMove.CurrentRow].Value == Pieces.WhiteKing)
+                        isThisValidMove = false;
+                }
+            }
             return isThisValidMove;
         }
 
@@ -311,9 +355,9 @@ namespace B18_Ex02
             int currentRow = i_currentMove.CurrentRow;
             int currentCoulmn = i_currentMove.CurrentCoulmn;
             int nextRow = i_currentMove.NextRow;
-            int nextCoulmn = i_currentMove.NextCoulmn;
+            int nextCoulmn = i_currentMove.NextColumn;
 
-            if (Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextCoulmn) == 2)
+            if (Math.Abs(i_currentMove.CurrentCoulmn - i_currentMove.NextColumn) == 2)
             {
                 Cell currentCell = m_Checkers.GameBoard[currentCoulmn, currentRow];
                 Cell targetCell = m_Checkers.GameBoard[(nextCoulmn + currentCoulmn) / 2, (nextRow + currentRow) / 2];
@@ -325,7 +369,7 @@ namespace B18_Ex02
             return eatRes;
         }
 
-        private Move checkIfPlayerCanEat(Player i_currentPlayer,bool i_isSequenceEating)
+        private Move checkIfPlayerCanEat(Player i_currentPlayer, bool i_isSequenceEating)
         {
             int boardSize = m_Checkers.GameBoard.GetLength(0);
             Move canEatRes = null;
@@ -415,15 +459,6 @@ namespace B18_Ex02
                     && i_moveInput[2] == '>'
                     && i_moveInput[3] >= 'A' && i_moveInput[3] <= (column + Board.COLUMN_CAPITAL_LETTER)
                     && i_moveInput[4] >= 'a' && i_moveInput[4] <= (column + Board.ROW_SMALL_LETTER));
-        }
-
-        private void convertStringInputToIntegers(string i_MoveInput, out int i_currentCol, out int i_currentRow, out int i_nextCol, out int i_nextRow)
-        {
-            i_currentCol = i_MoveInput[0] - Board.COLUMN_CAPITAL_LETTER;
-            i_currentRow = i_MoveInput[1] - Board.ROW_SMALL_LETTER;
-
-            i_nextCol = i_MoveInput[3] - Board.COLUMN_CAPITAL_LETTER;
-            i_nextRow = i_MoveInput[4] - Board.ROW_SMALL_LETTER;
         }
 
         private int getPlayerSolidersCount(Player i_currentPlayer)
