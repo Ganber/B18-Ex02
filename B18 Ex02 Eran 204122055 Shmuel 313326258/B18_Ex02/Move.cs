@@ -1,6 +1,8 @@
-﻿namespace B18_Ex02
+﻿using System.Text;
+
+namespace B18_Ex02
 {
-    class Move
+    public class Move
     {
         private int m_CurrentRow;
         private int m_CurrentCoulmn;
@@ -26,6 +28,7 @@
             m_NextRow = i_NextRow;
 
         }
+
         public int CurrentRow
         {
             get { return m_CurrentRow; }
@@ -45,6 +48,36 @@
         {
             get { return m_NextCoulmn; }
             set { m_NextCoulmn = value; }
+        }
+
+        public bool isMoveInputLegal(int i_boardSize)
+        {
+            bool legalMove = true;
+
+            if (this.CurrentCoulmn < 0 || this.CurrentRow < 0 || this.NextColumn < 0 || this.NextRow < 0)
+            {
+                legalMove = false;
+            }
+
+            if (this.CurrentCoulmn >= i_boardSize || this.CurrentRow >= i_boardSize || this.NextColumn >= i_boardSize || this.NextRow >= i_boardSize)
+            {
+                legalMove = false;
+            }
+
+            return legalMove;
+        }
+
+        public string convertToString()
+        {
+            string resStr = "";
+
+            resStr += (char)(this.CurrentCoulmn + Board.COLUMN_CAPITAL_LETTER);
+            resStr += (char)(this.CurrentRow + Board.ROW_SMALL_LETTER);
+            resStr += ">";
+            resStr += (char)(this.NextColumn + Board.COLUMN_CAPITAL_LETTER);
+            resStr += (char)(this.NextRow + Board.ROW_SMALL_LETTER);
+
+            return resStr;
         }
     }
 }

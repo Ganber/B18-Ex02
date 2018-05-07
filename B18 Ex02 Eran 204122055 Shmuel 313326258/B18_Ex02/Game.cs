@@ -42,13 +42,15 @@
             bool isSequenceEating = false;
             string nextMoveInputString = null;
 
-            while (!m_GameOver)
+            while (!m_GameOver )
             {
-                if (CurrentPlayer.isHuman)
+                lastMove = CurrentMove;
+
+                if (false) //TODO: change false -> CurrentPlayer.isHuman
                 {
                     if (nextMoveInputString != null)
                     {
-                        UI.DisplayLastPlayerMove(OpponentPlayer, nextMoveInputString);
+                        UI.DisplayLastPlayerMove(OpponentPlayer, lastMove);
                     }
 
                     UI.DisplayCurrentPlayerMessage(CurrentPlayer);
@@ -59,7 +61,7 @@
                         m_GameOver = true;
                     }
 
-                    lastMove = CurrentMove;
+                    
                     CurrentMove = new Move(nextMoveInputString);
 
                     while (!isStringInputLegal(nextMoveInputString) || !isValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
@@ -80,16 +82,15 @@
                 else
                 {
                     UI.DisplayWatingToPcMove();
-                    lastMove = CurrentMove;
-                    CurrentMove = getAvailableMove(lastMove, isSequenceEating, m_playerTwo);
+                    CurrentMove = getAvailableMove(lastMove, isSequenceEating, CurrentPlayer); //TODO: change CurrentPlayer -> m_playerTwo.
                 }
 
-                OpponentPlayerSolidersCounter = getPlayerSolidersCount(OpponentPlayer);
+                OpponentPlayerSolidersCounter = m_Checkers.getPlayerSolidersCount(OpponentPlayer);
                 makeMove(CurrentMove);
 
                 isSequenceEating = true;
 
-                if (OpponentPlayerSolidersCounter == getPlayerSolidersCount(OpponentPlayer))
+                if (OpponentPlayerSolidersCounter == m_Checkers.getPlayerSolidersCount(OpponentPlayer))
                 {
                     // not an Eat move.
                     isSequenceEating = false;
@@ -105,14 +106,20 @@
                     }
                 }
 
-                m_GameOver = isGameOver(lastMove, isSequenceEating);
+                m_GameOver = isGameOver(OpponentPlayer);
 
                 m_Checkers.clearBoard();
                 m_Checkers.drawBoard();
             }
 
-            m_playerOne.Score = getPlayerSolidersCount(m_playerOne) - getPlayerSolidersCount(m_playerTwo);
-            m_playerTwo.Score = getPlayerSolidersCount(m_playerTwo) - getPlayerSolidersCount(m_playerOne);
+            if (m_Checkers.getPlayerSolidersCount(m_playerOne) - m_Checkers.getPlayerSolidersCount(m_playerTwo) > 0)
+            {
+                m_playerOne.Score += m_Checkers.getPlayerSolidersCount(m_playerOne) - m_Checkers.getPlayerSolidersCount(m_playerTwo);
+            }
+            else
+            {
+                m_playerTwo.Score += m_Checkers.getPlayerSolidersCount(m_playerTwo) - m_Checkers.getPlayerSolidersCount(m_playerOne);
+            }
 
             if (m_playerOne.Score > m_playerTwo.Score)
             {
@@ -130,16 +137,16 @@
             UI.GameOverMessage();
         }
 
-        private bool isGameOver(Move i_LastMove, bool i_SequenceEat)
+        private bool isGameOver(Player i_OpponentPlayer)
         {
             bool isGameOver = false;
 
-            if (getPlayerSolidersCount(m_playerOne) == 0 || getPlayerSolidersCount(m_playerTwo) == 0)
+            if (m_Checkers.getPlayerSolidersCount(m_playerOne) == 0 || m_Checkers.getPlayerSolidersCount(m_playerTwo) == 0)
             {
                 isGameOver = true;
             }
 
-            if (getAvailableMove(i_LastMove, i_SequenceEat, m_playerOne) == null || getAvailableMove(i_LastMove, i_SequenceEat, m_playerTwo) == null)
+            if (getAvailableMove(null, false, i_OpponentPlayer) == null)
             {
                 isGameOver = true;
             }
@@ -306,29 +313,12 @@
             return res;
         }
 
-        private bool isMoveInputLegal(Move i_move)
-        {
-            int boardSize = m_Checkers.GameBoard.GetLength(0);
-            bool legalMove = true;
-
-            if (i_move.CurrentCoulmn < 0 || i_move.CurrentRow < 0 || i_move.NextColumn < 0 || i_move.NextRow < 0)
-            {
-                legalMove = false;
-            }
-
-            if (i_move.CurrentCoulmn >= boardSize || i_move.CurrentRow >= boardSize || i_move.NextColumn >= boardSize || i_move.NextRow >= boardSize)
-            {
-                legalMove = false;
-            }
-
-            return legalMove;
-        }
 
         private bool isValidMove(Move i_CurrentMove, Move i_LastMove, bool i_SequenceEat, Player i_CurrentPlayer)
         {
             bool isThisValidMove = false;
 
-            if (isMoveInputLegal(i_CurrentMove))
+            if (i_CurrentMove.isMoveInputLegal(m_Checkers.GameBoard.GetLength(0))) //check that the move is legal.
             {
                 Cell currentCell = m_Checkers.GameBoard[i_CurrentMove.CurrentCoulmn, i_CurrentMove.CurrentRow];
                 if (i_SequenceEat)
@@ -530,44 +520,6 @@
                     && i_MoveInput[3] >= 'A' && i_MoveInput[3] <= (column + Board.COLUMN_CAPITAL_LETTER)
                     && i_MoveInput[4] >= 'a' && i_MoveInput[4] <= (column + Board.ROW_SMALL_LETTER));
         }
-
-        private int getPlayerSolidersCount(Player i_CurrentPlayer)
-        {
-            int solidersCount = 0;
-            int boardSize = m_Checkers.GameBoard.GetLength(0);
-
-            for (int currentCol = 0; currentCol < boardSize; currentCol++)
-            {
-                for (int currentRow = 0; currentRow < boardSize; currentRow++)
-                {
-                    if (i_CurrentPlayer.IsWhite)
-                    {
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.White)
-                        {
-                            solidersCount++;
-                        }
-
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.WhiteKing)
-                        {
-                            solidersCount += 4;
-                        }
-                    }
-                    else
-                    {
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.Black)
-                        {
-                            solidersCount++;
-                        }
-
-                        if (m_Checkers.GameBoard[currentCol, currentRow].Value == Pieces.BlackKing)
-                        {
-                            solidersCount += 4;
-                        }
-                    }
-                }
-            }
-
-            return solidersCount;
-        }
+        
     }
 }

@@ -87,5 +87,44 @@ namespace B18_Ex02
         {
             Ex02.ConsoleUtils.Screen.Clear();
         }
+
+        public int getPlayerSolidersCount(Player i_CurrentPlayer)
+        {
+            int solidersCount = 0;
+            int boardSize = m_gameBoard.GetLength(0);
+
+            for (int currentCol = 0; currentCol < boardSize; currentCol++)
+            {
+                for (int currentRow = 0; currentRow < boardSize; currentRow++)
+                {
+                    if (i_CurrentPlayer.IsWhite)
+                    {
+                        if (m_gameBoard[currentCol, currentRow].Value == Game.Pieces.White)
+                        {
+                            solidersCount++;
+                        }
+
+                        if (m_gameBoard[currentCol, currentRow].Value == Game.Pieces.WhiteKing)
+                        {
+                            solidersCount += 4;
+                        }
+                    }
+                    else
+                    {
+                        if (m_gameBoard[currentCol, currentRow].Value == Game.Pieces.Black)
+                        {
+                            solidersCount++;
+                        }
+
+                        if (m_gameBoard[currentCol, currentRow].Value == Game.Pieces.BlackKing)
+                        {
+                            solidersCount += 4;
+                        }
+                    }
+                }
+            }
+
+            return solidersCount;
+        }
     }
 }

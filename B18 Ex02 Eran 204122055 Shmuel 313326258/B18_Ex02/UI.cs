@@ -82,7 +82,7 @@ namespace B18_Ex02
             return (Game.GamePlayer) userInput;
         }
 
-        public static void DisplayLastPlayerMove(Player i_PreviousPlayer, string i_inputMove)
+        public static void DisplayLastPlayerMove(Player i_PreviousPlayer, Move i_LastMove)
         {
             playerSymbol symbol;
 
@@ -95,7 +95,7 @@ namespace B18_Ex02
                 symbol = playerSymbol.X;
             }
 
-            Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_inputMove);
+            Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + symbol.ToString() + "): " + i_LastMove.convertToString());
         }
 
         internal static void DisplayScoreOfPlayers(Player i_PlayerOne, Player i_PlayerTwo)
@@ -106,7 +106,7 @@ namespace B18_Ex02
 
         internal static void DisplayWinnerMessage(Player i_CurrentPlayer)
         {
-            Console.WriteLine("The winner is: " + i_CurrentPlayer);
+            Console.WriteLine("The winner is: " + i_CurrentPlayer.Name);
         }
 
         internal static void DisplayTieMessage()
@@ -122,7 +122,7 @@ namespace B18_Ex02
         public static void DisplayWatingToPcMove()
         {
             Console.WriteLine("Please Wait to PC move..");
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(500);
         }
 
         public static void GameOverMessage()
