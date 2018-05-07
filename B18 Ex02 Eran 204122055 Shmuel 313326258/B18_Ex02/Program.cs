@@ -10,16 +10,11 @@ namespace B18_Ex02
     {
         public static void Main()
         {
-            Game Checkers = new Game();
-            Checkers.run();
+            UI userInterface = new UI();
+            userInterface.run();
         }
     }
 
-    //TODO: ?Maybe? Change all Func(int CurrentColumn,int CurrentRow) To >> Func(Cell CurrentCell)
-    //TODO: Make the game not depending on UI
-    //TODO: Game Over when one of the players win or theres a tie, or someone pressed Q
-    //TODO: Fix data members, local veriables, and functions name
-    //TODO: Take a look at the previous Exrecise and fix same bugs
-    //TODO: play another Game when game has been end (same players, and same board size)
-    //TODO: (optional) Add AI sense to computer player
+    // TODO: Take a look at the previous Exrecise and fix same bugs
+    // TODO: play another Game when game has been end (same players, and same board size)
 }

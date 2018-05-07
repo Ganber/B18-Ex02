@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace B18_Ex02
+﻿namespace B18_Ex02
 {
     public class Move
     {
@@ -20,13 +18,13 @@ namespace B18_Ex02
                 m_NextRow = i_MoveInput[4] - Board.ROW_SMALL_LETTER;
             }
         }
+
         public Move(int i_CurrentCoulmn, int i_CurrentRow, int i_NextCoulmn, int i_NextRow)
         {
             m_CurrentCoulmn = i_CurrentCoulmn;
             m_CurrentRow = i_CurrentRow;
             m_NextCoulmn = i_NextCoulmn;
             m_NextRow = i_NextRow;
-
         }
 
         public int CurrentRow
@@ -34,16 +32,19 @@ namespace B18_Ex02
             get { return m_CurrentRow; }
             set { m_CurrentRow = value; }
         }
+
         public int CurrentCoulmn
         {
             get { return m_CurrentCoulmn; }
             set { m_CurrentCoulmn = value; }
         }
+
         public int NextRow
         {
             get { return m_NextRow; }
             set { m_NextRow = value; }
         }
+
         public int NextColumn
         {
             get { return m_NextCoulmn; }
@@ -69,7 +70,7 @@ namespace B18_Ex02
 
         public string convertToString()
         {
-            string resStr = "";
+            string resStr = string.Empty;
 
             resStr += (char)(this.CurrentCoulmn + Board.COLUMN_CAPITAL_LETTER);
             resStr += (char)(this.CurrentRow + Board.ROW_SMALL_LETTER);

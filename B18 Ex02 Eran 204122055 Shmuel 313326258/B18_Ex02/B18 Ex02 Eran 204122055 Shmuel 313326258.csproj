@@ -40,9 +40,13 @@
     <Compile Include="Cell.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="Move.cs" />
+    <Compile Include="Move.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="UI.cs" />
+    <Compile Include="UI.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Ex02.ConsoleUtils">

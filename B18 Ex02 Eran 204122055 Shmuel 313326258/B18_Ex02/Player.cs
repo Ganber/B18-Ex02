@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace B18_Ex02
+﻿namespace B18_Ex02
 {
     public class Player
     {
@@ -14,12 +12,12 @@ namespace B18_Ex02
             get { return m_name; }
             set { m_name = value; }
         }
+
         public int Score
         {
             get { return m_score; }
             set { m_score = value; }
         }
-
 
         public bool isHuman
         {
