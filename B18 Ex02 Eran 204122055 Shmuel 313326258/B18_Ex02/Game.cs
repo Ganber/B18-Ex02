@@ -1,4 +1,6 @@
-﻿namespace B18_Ex02
+﻿using System;
+
+namespace B18_Ex02
 {
     public class Game
     {
@@ -42,7 +44,7 @@
         {
             bool isGameOver = false;
 
-            if (m_Checkers.getPlayerSolidersCount(m_playerOne) == 0 || m_Checkers.getPlayerSolidersCount(m_playerTwo) == 0)
+            if (m_Checkers.getPlayerSolidersCount(PlayerOne) == 0 || m_Checkers.getPlayerSolidersCount(PlayerTwo) == 0)
             {
                 isGameOver = true;
             }
@@ -144,6 +146,11 @@
             }
         }
 
+        public void ResetValues()
+        {
+            GameOver = false;
+        }
+
         public Move IsAbleToEat(int i_CurrentColumn, int i_CurrentRow, bool i_IsIntEatingSequence)
         {
             Cell currentCell = m_Checkers.GameBoard[i_CurrentColumn, i_CurrentRow];
@@ -197,6 +204,23 @@
             return eatMove;
         }
 
+        public void UpdateScore()
+        {
+            if (Board.getPlayerSolidersCount(PlayerOne) - Board.getPlayerSolidersCount(PlayerTwo) > 0)
+            {
+                PlayerOne.Score += Board.getPlayerSolidersCount(PlayerOne) - Board.getPlayerSolidersCount(PlayerTwo);
+            }
+            else
+            {
+                PlayerTwo.Score += Board.getPlayerSolidersCount(PlayerTwo) - Board.getPlayerSolidersCount(PlayerOne);
+            }
+        }
+
+        public void UpdateLastMove(Move currentMove, ref Move lastMove)
+        {
+            lastMove = currentMove;
+        }
+
         private bool checkIfOpponent(Cell i_cellOne, Cell i_cellTwo)
         {
             bool res = false;
@@ -212,6 +236,94 @@
             }
 
             return res;
+        }
+
+        public Player getOpponent(Player i_CurrentPlayer)
+        {
+            if (i_CurrentPlayer == PlayerOne)
+                return PlayerTwo;
+            else
+                return PlayerOne;
+        }
+
+        public void MakeNextMove(ref Player i_CurrentPlayer, ref Move i_LastMove,ref bool i_isSequenceEating)
+        {
+            Move CurrentMove=null;
+            int OpponentPlayerSolidersCounter = 0;
+            string nextMoveStringInput;
+            
+            if (i_CurrentPlayer.isHuman)
+            {
+                nextMoveStringInput = UI.GetUserInput();
+                if (nextMoveStringInput.Equals(UI.RESIGN_GAME) 
+                    && Board.getPlayerSolidersCount(i_CurrentPlayer) < Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
+                {
+                    GameOver = true;
+                }
+
+                CurrentMove = new Move(nextMoveStringInput);
+
+                while (!IsStringInputLegal(nextMoveStringInput) || !IsValidMove(CurrentMove, i_LastMove, i_isSequenceEating, i_CurrentPlayer))
+                {
+                    if (!IsStringInputLegal(nextMoveStringInput))
+                    {
+                        UI.DisplayIncorrectInputMessage();
+                    }
+                    else
+                    {
+                        UI.DisplayCantMoveHereMessage();
+                    }
+
+                    nextMoveStringInput = UI.GetUserInput();
+                    CurrentMove = new Move(nextMoveStringInput);
+                }
+            }
+
+            else
+            {
+               UI.DisplayWatingToPcMove();
+               CurrentMove = GetAvailableMove(i_LastMove, i_isSequenceEating, PlayerTwo);
+            }
+
+            OpponentPlayerSolidersCounter = Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer));
+            MakeMove(CurrentMove);
+            UpdateLastMove(CurrentMove, ref i_LastMove);
+
+            i_isSequenceEating = true;
+
+            if (OpponentPlayerSolidersCounter == Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
+            {
+                // not an Eat move.
+                i_isSequenceEating = false;
+                if (i_CurrentPlayer == PlayerOne)
+                {
+                    i_CurrentPlayer = PlayerTwo;
+                }
+                else
+                {
+                    i_CurrentPlayer = PlayerOne;
+                }
+            }
+            else
+            {
+                if (IsAbleToEat(CurrentMove.NextColumn, CurrentMove.NextRow, i_isSequenceEating) == null)
+                {
+                    // cant eat more.
+                    if (i_CurrentPlayer == PlayerOne)
+                    {
+                        i_CurrentPlayer = PlayerTwo;
+                    }
+                    else
+                    {
+                        i_CurrentPlayer = PlayerOne;
+                    }
+
+                    i_isSequenceEating = false;
+                }
+            }
+
+            GameOver = IsGameOver(getOpponent(i_CurrentPlayer));
+
         }
 
         public bool IsValidMove(Move i_CurrentMove, Move i_LastMove, bool i_SequenceEat, Player i_CurrentPlayer)
@@ -359,15 +471,15 @@
 
         public void SwapPlayers(ref Player i_CurrentPlayer, ref Player i_OpponentPlayer)
         {
-            if (i_CurrentPlayer == m_playerOne)
+            if (i_CurrentPlayer == PlayerOne)
             {
-                i_CurrentPlayer = m_playerTwo;
-                i_OpponentPlayer = m_playerOne;
+                i_CurrentPlayer = PlayerTwo;
+                i_OpponentPlayer = PlayerOne;
             }
             else
             {
-                i_CurrentPlayer = m_playerOne;
-                i_OpponentPlayer = m_playerTwo;
+                i_CurrentPlayer = PlayerOne;
+                i_OpponentPlayer = PlayerTwo;
             }
         }
 

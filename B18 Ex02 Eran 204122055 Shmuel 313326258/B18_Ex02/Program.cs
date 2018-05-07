@@ -15,6 +15,5 @@ namespace B18_Ex02
         }
     }
 
-    // TODO: Take a look at the previous Exrecise and fix same bugs
-    // TODO: play another Game when game has been end (same players, and same board size)
+   
 }

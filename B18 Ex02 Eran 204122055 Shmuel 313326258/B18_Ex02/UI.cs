@@ -10,7 +10,7 @@
         private const string cantSelectMessage = "Error! Cannot select!";
         private const string enterPlayerNameMessage = "Hello! please enter your name (20 letters max)";
         private const string playAgainstComputerOrPlayerMessage = "enter 1 to play against computer or 2 to play against human player";
-        private const char RESIGN_GAME = 'Q';
+        public const char RESIGN_GAME = 'Q';
 
         private static uint m_BoardSize;
         private Game m_Checkers = new Game();
@@ -108,18 +108,21 @@
 
         public static void DisplayLastPlayerMove(Player i_PreviousPlayer, Move i_LastMove)
         {
-            Pieces symbol;
-
-            if (i_PreviousPlayer.IsWhite)
+            if (i_LastMove != null)
             {
-                symbol = Pieces.White;
-            }
-            else
-            {
-                symbol = Pieces.Black;
-            }
+                Pieces symbol;
 
-            Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + (char)symbol + "): " + i_LastMove.convertToString());
+                if (i_PreviousPlayer.IsWhite)
+                {
+                    symbol = Pieces.White;
+                }
+                else
+                {
+                    symbol = Pieces.Black;
+                }
+
+                Console.WriteLine(i_PreviousPlayer.Name + "'s move was (" + (char)symbol + "): " + i_LastMove.convertToString());
+            }
         }
 
         public static void DisplayCanEatMoreMessage()
@@ -130,14 +133,14 @@
         public static void DisplayWatingToPcMove()
         {
             Console.WriteLine("Please Wait to PC move..");
-            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(100);
         }
 
-        public static void GameOverMessage()
+        public static void DisplayGameOverMessage()
         {
-            Console.SetCursorPosition(50, 10);
-            Console.Write("Game Over");
-            Console.ReadLine();
+
+            Console.WriteLine("Match is over !");
+            
         }
 
         public static void DrawCell(char i_cellToDraw)
@@ -163,99 +166,73 @@
 
         public void run()
         {
+            bool userKeepPlaying = true;
             InitGame(m_Checkers.Board, m_Checkers.PlayerOne, m_Checkers.PlayerTwo);
-            Player CurrentPlayer = m_Checkers.PlayerOne;
-            Player OpponentPlayer = m_Checkers.PlayerTwo;
-
-            drawBoard();
-
-            int OpponentPlayerSolidersCounter = 0;
-            Move CurrentMove = null;
-            Move lastMove = null;
-            bool isSequenceEating = false;
-            string nextMoveInputString = null;
-
-            while (!m_Checkers.GameOver)
+            while (userKeepPlaying)
             {
-                lastMove = CurrentMove;
+                Player CurrentPlayer = m_Checkers.PlayerOne;
+                Move lastMove = null;
+                bool isSequenceEating = false;
+                m_Checkers.ResetValues();
+                m_Checkers.Board.InitGameBoard((uint)m_Checkers.Board.GameBoard.GetLength(0));
 
-                m_Checkers.MakeNextMove(nextMoveInputString, CurrentPlayer, CurrentMove);
-
-                if (CurrentPlayer.isHuman)
+                while (!m_Checkers.GameOver)
                 {
-                    if (nextMoveInputString != null)
-                    {
-                        DisplayLastPlayerMove(OpponentPlayer, lastMove);
-                    }
-
+                    clearBoard();
+                    drawBoard();
+                    DisplayLastPlayerMove(m_Checkers.getOpponent(CurrentPlayer), lastMove);
                     DisplayCurrentPlayerMessage(CurrentPlayer);
-                    nextMoveInputString = GetUserInput();
-
-                    if (nextMoveInputString.Equals(RESIGN_GAME) && m_Checkers.Board.getPlayerSolidersCount(CurrentPlayer) < m_Checkers.Board.getPlayerSolidersCount(OpponentPlayer))
-                    {
-                        m_Checkers.GameOver = true;
-                        break;
-                    }
-
-                    CurrentMove = new Move(nextMoveInputString);
-
-                    while (!m_Checkers.IsStringInputLegal(nextMoveInputString) || !m_Checkers.IsValidMove(CurrentMove, lastMove, isSequenceEating, CurrentPlayer))
-                    {
-                        if (!m_Checkers.IsStringInputLegal(nextMoveInputString))
-                        {
-                            DisplayIncorrectInputMessage();
-                        }
-                        else
-                        {
-                            DisplayCantMoveHereMessage();
-                        }
-
-                        nextMoveInputString = GetUserInput();
-                        CurrentMove = new Move(nextMoveInputString);
-                    }
-                }
-                else
-                {
-                    DisplayWatingToPcMove();
-                    CurrentMove = m_Checkers.GetAvailableMove(lastMove, isSequenceEating, CurrentPlayer); // TODO: change CurrentPlayer -> m_playerTwo.
+                    m_Checkers.MakeNextMove(ref CurrentPlayer, ref lastMove, ref isSequenceEating);
                 }
 
-                OpponentPlayerSolidersCounter = m_Checkers.Board.getPlayerSolidersCount(OpponentPlayer);
-                m_Checkers.MakeMove(CurrentMove);
-
-                isSequenceEating = true;
-
-                if (OpponentPlayerSolidersCounter == m_Checkers.Board.getPlayerSolidersCount(OpponentPlayer))
-                {
-                    // not an Eat move.
-                    isSequenceEating = false;
-                    m_Checkers.SwapPlayers(ref CurrentPlayer, ref OpponentPlayer);
-                }
-                else
-                {
-                    if (m_Checkers.IsAbleToEat(CurrentMove.NextColumn, CurrentMove.NextRow, isSequenceEating) == null)
-                    {
-                        // cant eat more.
-                        m_Checkers.SwapPlayers(ref CurrentPlayer, ref OpponentPlayer);
-                        isSequenceEating = false;
-                    }
-                }
-
-                m_Checkers.GameOver = m_Checkers.IsGameOver(OpponentPlayer);
-
+                m_Checkers.UpdateScore();
                 clearBoard();
                 drawBoard();
+
+                DisplayGameOverMessage();
+                DisplayEndMatchResult();
+                DisplayCurrentGameScore(m_Checkers);
+                DisplayAnotherGameMessage();
+                userKeepPlaying = GetKeepPlayingInput();
             }
 
-            if (m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerOne) - m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerTwo) > 0)
-            {
-                m_Checkers.PlayerOne.Score += m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerOne) - m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerTwo);
-            }
-            else
-            {
-                m_Checkers.PlayerTwo.Score += m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerTwo) - m_Checkers.Board.getPlayerSolidersCount(m_Checkers.PlayerOne);
-            }
+            DisplayQuitGameMessage();
+        }
 
+        private void DisplayQuitGameMessage()
+        {
+            Console.WriteLine("Thank you for playing Checkers !");
+        }
+
+        private bool GetKeepPlayingInput()
+        {
+            string PlayerDecision = Console.ReadLine();
+            bool res = false;
+            while (PlayerDecision != "Y" && PlayerDecision != "N")
+            {
+                Console.WriteLine("Please type Y for yes, N for no");
+                PlayerDecision = Console.ReadLine();
+            }
+            if (PlayerDecision == "Y")
+                res = true;
+
+
+            return res;
+        }
+
+        private void DisplayAnotherGameMessage()
+        {
+            Console.WriteLine("Do you want to play another match ? Y/N");
+        }
+
+        private void DisplayCurrentGameScore(Game m_Checkers)
+        {
+            Console.WriteLine(m_Checkers.PlayerOne.Name + " current score is: " + m_Checkers.PlayerOne.Score);
+            Console.WriteLine(m_Checkers.PlayerTwo.Name + " current score is: " + m_Checkers.PlayerTwo.Score);
+        }
+
+        private void DisplayEndMatchResult()
+        {
             if (m_Checkers.PlayerOne.Score > m_Checkers.PlayerTwo.Score)
             {
                 DisplayWinnerMessage(m_Checkers.PlayerOne);
@@ -269,11 +246,12 @@
                 DisplayTieMessage();
             }
 
-            GameOverMessage();
+            
         }
 
         public void InitGame(Board i_Checkers, Player i_PlayerOne, Player i_PlayerTwo)
         {
+            
             i_PlayerOne.Name = GetPlayerNameFromInput();
             i_PlayerOne.IsWhite = false;
 
@@ -291,24 +269,9 @@
             }
 
             clearBoard();
-            i_Checkers.createEmptyGameBoard(boardSize);
+            i_Checkers.InitGameBoard(boardSize);
 
-            for (int column = 0; column < boardSize; column = column + 2)
-            {
-                for (int row = 0; row < (boardSize / 2) - 1; row++)
-                {
-                    if (row % 2 == 0)
-                    {
-                        i_Checkers.GameBoard[column, row].Value = Pieces.White;
-                        i_Checkers.GameBoard[column + 1, boardSize - row - 1].Value = Pieces.Black;
-                    }
-                    else
-                    {
-                        i_Checkers.GameBoard[column + 1, row].Value = Pieces.White;
-                        i_Checkers.GameBoard[column, boardSize - row - 1].Value = Pieces.Black;
-                    }
-                }
-            }
+
         }
 
         public void drawBoard()
