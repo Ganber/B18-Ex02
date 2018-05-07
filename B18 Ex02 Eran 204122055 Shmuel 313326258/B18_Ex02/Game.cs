@@ -54,12 +54,7 @@
                     UI.DisplayCurrentPlayerMessage(CurrentPlayer);
                     nextMoveInputString = Console.ReadLine();
 
-                    if (nextMoveInputString == "Q" && m_playerOne.Score >= m_playerTwo.Score && CurrentPlayer == m_playerOne)
-                    {
-                        m_GameOver = true;
-                    }
-
-                    if (nextMoveInputString == "Q" && m_playerTwo.Score >= m_playerOne.Score && CurrentPlayer == m_playerTwo)
+                    if (nextMoveInputString == "Q" && CurrentPlayer.Score < OpponentPlayer.Score)
                     {
                         m_GameOver = true;
                     }
