@@ -255,7 +255,7 @@ namespace B18_Ex02
             if (i_CurrentPlayer.isHuman)
             {
                 nextMoveStringInput = UI.GetUserInput();
-                if (nextMoveStringInput.Equals(UI.RESIGN_GAME) 
+                if (nextMoveStringInput == (UI.RESIGN_GAME) 
                     && Board.getPlayerSolidersCount(i_CurrentPlayer) < Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
                 {
                     GameOver = true;
@@ -273,10 +273,16 @@ namespace B18_Ex02
                     {
                         UI.DisplayCantMoveHereMessage();
                     }
-
+                    if (nextMoveStringInput == (UI.RESIGN_GAME)
+                          && Board.getPlayerSolidersCount(i_CurrentPlayer) < Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
+                    {
+                        GameOver = true;
+                        break;
+                    }
                     nextMoveStringInput = UI.GetUserInput();
                     CurrentMove = new Move(nextMoveStringInput);
                 }
+
             }
 
             else
@@ -285,30 +291,18 @@ namespace B18_Ex02
                CurrentMove = GetAvailableMove(i_LastMove, i_isSequenceEating, PlayerTwo);
             }
 
-            OpponentPlayerSolidersCounter = Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer));
-            MakeMove(CurrentMove);
-            UpdateLastMove(CurrentMove, ref i_LastMove);
-
-            i_isSequenceEating = true;
-
-            if (OpponentPlayerSolidersCounter == Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
+            if (GameOver == false)
             {
-                // not an Eat move.
-                i_isSequenceEating = false;
-                if (i_CurrentPlayer == PlayerOne)
+                OpponentPlayerSolidersCounter = Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer));
+                MakeMove(CurrentMove);
+                UpdateLastMove(CurrentMove, ref i_LastMove);
+
+                i_isSequenceEating = true;
+
+                if (OpponentPlayerSolidersCounter == Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
                 {
-                    i_CurrentPlayer = PlayerTwo;
-                }
-                else
-                {
-                    i_CurrentPlayer = PlayerOne;
-                }
-            }
-            else
-            {
-                if (IsAbleToEat(CurrentMove.NextColumn, CurrentMove.NextRow, i_isSequenceEating) == null)
-                {
-                    // cant eat more.
+                    // not an Eat move.
+                    i_isSequenceEating = false;
                     if (i_CurrentPlayer == PlayerOne)
                     {
                         i_CurrentPlayer = PlayerTwo;
@@ -317,13 +311,27 @@ namespace B18_Ex02
                     {
                         i_CurrentPlayer = PlayerOne;
                     }
-
-                    i_isSequenceEating = false;
                 }
+                else
+                {
+                    if (IsAbleToEat(CurrentMove.NextColumn, CurrentMove.NextRow, i_isSequenceEating) == null)
+                    {
+                        // cant eat more.
+                        if (i_CurrentPlayer == PlayerOne)
+                        {
+                            i_CurrentPlayer = PlayerTwo;
+                        }
+                        else
+                        {
+                            i_CurrentPlayer = PlayerOne;
+                        }
+
+                        i_isSequenceEating = false;
+                    }
+                }
+
+                GameOver = IsGameOver(getOpponent(i_CurrentPlayer));
             }
-
-            GameOver = IsGameOver(getOpponent(i_CurrentPlayer));
-
         }
 
         public bool IsValidMove(Move i_CurrentMove, Move i_LastMove, bool i_SequenceEat, Player i_CurrentPlayer)

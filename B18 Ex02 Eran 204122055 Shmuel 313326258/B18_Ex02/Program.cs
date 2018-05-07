@@ -11,7 +11,7 @@ namespace B18_Ex02
         public static void Main()
         {
             UI userInterface = new UI();
-            userInterface.run();
+            userInterface.Run();
         }
     }
 

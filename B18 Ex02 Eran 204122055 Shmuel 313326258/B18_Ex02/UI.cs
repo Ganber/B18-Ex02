@@ -10,7 +10,8 @@
         private const string cantSelectMessage = "Error! Cannot select!";
         private const string enterPlayerNameMessage = "Hello! please enter your name (20 letters max)";
         private const string playAgainstComputerOrPlayerMessage = "enter 1 to play against computer or 2 to play against human player";
-        public const char RESIGN_GAME = 'Q';
+        public const  string RESIGN_GAME = "Q";
+       
 
         private static uint m_BoardSize;
         private Game m_Checkers = new Game();
@@ -29,7 +30,7 @@
             return Console.ReadLine();
         }
 
-        public static uint getSizeFromUserInput()
+        public static uint GetSizeFromUserInput()
         {
             Console.WriteLine("Please enter board size: (6, 8, 10)");
             while (!uint.TryParse(Console.ReadLine(), out m_BoardSize) ||
@@ -93,8 +94,8 @@
 
         public static Game.GamePlayer GetUserRival()
         {
-            Console.WriteLine(playAgainstComputerOrPlayerMessage);
             int userInput;
+            Console.WriteLine(playAgainstComputerOrPlayerMessage);
             int.TryParse(Console.ReadLine(), out userInput);
 
             while (userInput != (int)Game.GamePlayer.Computer && userInput != (int)Game.GamePlayer.Human)
@@ -164,7 +165,7 @@
             Console.WriteLine("Game end with a tie !");
         }
 
-        public void run()
+        public void Run()
         {
             bool userKeepPlaying = true;
             InitGame(m_Checkers.Board, m_Checkers.PlayerOne, m_Checkers.PlayerTwo);
@@ -178,16 +179,16 @@
 
                 while (!m_Checkers.GameOver)
                 {
-                    clearBoard();
-                    drawBoard();
+                    ClearBoard();
+                    DrawBoard();
                     DisplayLastPlayerMove(m_Checkers.getOpponent(CurrentPlayer), lastMove);
                     DisplayCurrentPlayerMessage(CurrentPlayer);
                     m_Checkers.MakeNextMove(ref CurrentPlayer, ref lastMove, ref isSequenceEating);
                 }
 
                 m_Checkers.UpdateScore();
-                clearBoard();
-                drawBoard();
+                ClearBoard();
+                DrawBoard();
 
                 DisplayGameOverMessage();
                 DisplayEndMatchResult();
@@ -255,7 +256,7 @@
             i_PlayerOne.Name = GetPlayerNameFromInput();
             i_PlayerOne.IsWhite = false;
 
-            uint boardSize = getSizeFromUserInput();
+            uint boardSize = GetSizeFromUserInput();
             Game.GamePlayer userOpponent = GetUserRival();
 
             if (userOpponent == Game.GamePlayer.Human)
@@ -268,13 +269,13 @@
                 i_PlayerTwo.isHuman = false;
             }
 
-            clearBoard();
+            ClearBoard();
             i_Checkers.InitGameBoard(boardSize);
 
 
         }
 
-        public void drawBoard()
+        public void DrawBoard()
         {
             int boardSize = m_Checkers.Board.GameBoard.GetLength(0);
             DrawColumnHeader();
@@ -305,7 +306,7 @@
             Console.WriteLine();
         }
 
-        public void clearBoard()
+        public void ClearBoard()
         {
             Ex02.ConsoleUtils.Screen.Clear();
         }
