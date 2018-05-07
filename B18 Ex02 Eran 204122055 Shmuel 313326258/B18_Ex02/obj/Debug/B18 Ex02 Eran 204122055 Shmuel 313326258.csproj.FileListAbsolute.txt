@@ -6,3 +6,10 @@ C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 E
 C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18 Ex02 Eran 204122055 Shmuel 313326258.csproj.CopyComplete
 C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.exe
 C:\Users\Shmuel\Source\Repos\B18 Ex02 Eran 204122055 Shmuel 313326258\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.pdb
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.exe.config
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.exe
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\B18_Ex02.pdb
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\bin\Debug\Ex02.ConsoleUtils.dll
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18 Ex02 Eran 204122055 Shmuel 313326258.csprojResolveAssemblyReference.cache
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.exe
+D:\Visual Studio Projects\C#\B18 Ex02\B18 Ex02 Eran 204122055 Shmuel 313326258\B18_Ex02\obj\Debug\B18_Ex02.pdb

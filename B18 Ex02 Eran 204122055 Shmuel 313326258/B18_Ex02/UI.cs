@@ -10,8 +10,7 @@
         private const string cantSelectMessage = "Error! Cannot select!";
         private const string enterPlayerNameMessage = "Hello! please enter your name (20 letters max)";
         private const string playAgainstComputerOrPlayerMessage = "enter 1 to play against computer or 2 to play against human player";
-        public const  string RESIGN_GAME = "Q";
-       
+        public const string RESIGN_GAME = "Q";
 
         private static uint m_BoardSize;
         private Game m_Checkers = new Game();
@@ -139,9 +138,7 @@
 
         public static void DisplayGameOverMessage()
         {
-
             Console.WriteLine("Match is over !");
-            
         }
 
         public static void DrawCell(char i_cellToDraw)
@@ -209,14 +206,17 @@
         {
             string PlayerDecision = Console.ReadLine();
             bool res = false;
+
             while (PlayerDecision != "Y" && PlayerDecision != "N")
             {
                 Console.WriteLine("Please type Y for yes, N for no");
                 PlayerDecision = Console.ReadLine();
             }
-            if (PlayerDecision == "Y")
-                res = true;
 
+            if (PlayerDecision == "Y")
+            {
+                res = true;
+            }
 
             return res;
         }
@@ -246,13 +246,10 @@
             {
                 DisplayTieMessage();
             }
-
-            
         }
 
         public void InitGame(Board i_Checkers, Player i_PlayerOne, Player i_PlayerTwo)
         {
-            
             i_PlayerOne.Name = GetPlayerNameFromInput();
             i_PlayerOne.IsWhite = false;
 
@@ -271,8 +268,6 @@
 
             ClearBoard();
             i_Checkers.InitGameBoard(boardSize);
-
-
         }
 
         public void DrawBoard()

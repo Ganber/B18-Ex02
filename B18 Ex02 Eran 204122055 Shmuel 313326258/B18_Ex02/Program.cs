@@ -14,6 +14,4 @@ namespace B18_Ex02
             userInterface.Run();
         }
     }
-
-   
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace B18_Ex02
+﻿namespace B18_Ex02
 {
     public class Game
     {
@@ -241,21 +239,25 @@ namespace B18_Ex02
         public Player getOpponent(Player i_CurrentPlayer)
         {
             if (i_CurrentPlayer == PlayerOne)
+            {
                 return PlayerTwo;
+            }
             else
+            {
                 return PlayerOne;
+            }
         }
 
-        public void MakeNextMove(ref Player i_CurrentPlayer, ref Move i_LastMove,ref bool i_isSequenceEating)
+        public void MakeNextMove(ref Player i_CurrentPlayer, ref Move i_LastMove, ref bool i_isSequenceEating)
         {
-            Move CurrentMove=null;
+            Move CurrentMove = null;
             int OpponentPlayerSolidersCounter = 0;
             string nextMoveStringInput;
             
             if (i_CurrentPlayer.isHuman)
             {
                 nextMoveStringInput = UI.GetUserInput();
-                if (nextMoveStringInput == (UI.RESIGN_GAME) 
+                if (nextMoveStringInput == UI.RESIGN_GAME 
                     && Board.getPlayerSolidersCount(i_CurrentPlayer) < Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
                 {
                     GameOver = true;
@@ -273,18 +275,18 @@ namespace B18_Ex02
                     {
                         UI.DisplayCantMoveHereMessage();
                     }
-                    if (nextMoveStringInput == (UI.RESIGN_GAME)
+
+                    if (nextMoveStringInput == UI.RESIGN_GAME
                           && Board.getPlayerSolidersCount(i_CurrentPlayer) < Board.getPlayerSolidersCount(getOpponent(i_CurrentPlayer)))
                     {
                         GameOver = true;
                         break;
                     }
+
                     nextMoveStringInput = UI.GetUserInput();
                     CurrentMove = new Move(nextMoveStringInput);
                 }
-
             }
-
             else
             {
                UI.DisplayWatingToPcMove();
